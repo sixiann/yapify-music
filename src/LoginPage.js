@@ -1,22 +1,20 @@
 import React from "react";
+import { login } from "./api";
+
 
 function LoginPage() {
-  const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
-  const REDIRECT_URI = "http://localhost:3000";
-  const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-  const RESPONSE_TYPE = "token";
-  const SCOPES = [
-    "user-library-read",
-    "user-top-read",
-    "user-read-recently-played",
-  ];
-  const login = () => {
-    window.location.href = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES.join("%20")}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
-  };
+
   return (
     <>
-      <h1>Spotify React log in to start</h1>
-      <button onClick={login}>Login</button>
+      <div className="window bg-white p-44 w-7/12 justify-center text-center">
+        <button 
+        // className="border-2 p-5 font-serif border-x-slate-500"
+        className = "bg-white hover:bg-emerald-300 text-gray-700 font-serif py-2 px-4 border border-gray-400 shadow"
+        
+        onClick={login}>Login with Spotify</button>
+
+      </div>
+      
     </>
   );
 }

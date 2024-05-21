@@ -1,7 +1,24 @@
 import axios from "axios";
 
+//login
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+const REDIRECT_URI = "http://localhost:3000";
+const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
+const RESPONSE_TYPE = "token";
+const SCOPES = [
+  "user-library-read",
+  "user-top-read",
+  "user-read-recently-played",
+];
 
-// authorization functions 
+//leave this on frontend, i realized u can't hide ur client_id anyway since it's in the url
+const login = () => {
+  window.location.href = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES.join(
+    "%20"
+  )}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
+};
+
+// authorization functions
 const getTokenFromUrl = () => {
   const hash = window.location.hash;
   let token = window.localStorage.getItem("token");
@@ -20,46 +37,18 @@ const getTokenFromUrl = () => {
   return token;
 };
 
-
-//spotify api 
 const getCurrentArtists = async (token) => {
   try {
-    const { data } = await axios.get(
-      "https://api.spotify.com/v1/me/top/artists",
+    const response = await axios.post(
+      "http://localhost:5000/get-current-artists",
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          limit: 10,
-          time_range: "short_term",
-        },
+        token,
       }
     );
+
     console.log("get current artists success");
-    console.log(data);
-  } catch (error) {
-    console.error("Error fetching top artists:", error);
-    throw error;
-  }
-};
-
-const getAllTimeArtists = async (token) => {
-  try {
-    const { data } = await axios.get(
-      "https://api.spotify.com/v1/me/top/artists",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          limit: 10,
-          time_range: "long_term",
-        },
-      }
-    );
-    console.log("get all time artists success");
-    console.log(data);
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     console.error("Error fetching top artists:", error);
     throw error;
@@ -67,4 +56,4 @@ const getAllTimeArtists = async (token) => {
 };
 
 
-export { getTokenFromUrl, getCurrentArtists, getAllTimeArtists };
+export { login, getTokenFromUrl, getCurrentArtists };
