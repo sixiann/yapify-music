@@ -25,10 +25,10 @@ app.post("/get-current-artists", async (req, res) => {
   const { token } = req.body;
 
   //get the user's top 10 artists
-  //   const usersArtistData = await getCurrentArtistsFromSpotify(token);
+  //   const userCurrentArtistsData = await getCurrentArtistsFromSpotify(token);
 
   //   //get the relevant variables from artist's data
-  // const processedData = usersArtistData.items.map((artist, index) => ({
+  // const userCurrentArtists = userCurrentArtistsData.items.map((artist, index) => ({
   //     artistName: artist.name,
   //     artistId: artist.id,
   //     genres: artist.genres,
@@ -41,6 +41,7 @@ app.post("/get-current-artists", async (req, res) => {
   // const userData = await getUserProfile(token);
   // const userName = userData.display_name;
   // const userImage = userData.images[1].url;
+  // const userCountry = userData.country;
 
   //get the top 3 most similar artists for each artist in top 10
   // const artistId = "0TnOYISbd1XYRBk9myaseg";
@@ -51,9 +52,19 @@ app.post("/get-current-artists", async (req, res) => {
   //     artistLink: artist.external_urls.spotify,
   // }));
 
-  //pass userName, artistname, artistIndex, genres to getThankYouText function
-  //pass relatedArtists to the getRecommendationsText function
+  //get user's top tracks
+  const userCurrentTracksData = await getCurrentTracksFromSpotify(token);
+  const userCurrentTracksIds = userCurrentTracksData.items.map((track) => track.id);
 
+  const features = await getSeveralTracksFeatures(token, userCurrentTracksIds);
+  console.log(features);
+  //for each artist: 
+  //pass userName, artistname, artistIndex, genres to getThankYouText function
+  //call getRelated artists
+  //pass relatedArtists to the getRecommendationsText function
+  
+  //pass list of tracks to getseveraltracks audio features 
+  //pass results to dataprocessing function 
   const data = "hello";
   res.status(200).json(data);
 });
@@ -97,6 +108,29 @@ const getCurrentArtistsFromSpotify = async (token) => {
   }
 };
 
+//get user's current top tracks
+const getCurrentTracksFromSpotify = async (token) => {
+  try {
+    const { data } = await axios.get(
+      "https://api.spotify.com/v1/me/top/tracks",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit: 10,
+          time_range: "short_term",
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error("Error fetching top tracks:", error);
+    throw error;
+  }
+};
+
+//get artists similar to artistId
 const getRelatedArtists = async (token, artistId) => {
   try {
     const { data } = await axios.get(
@@ -117,6 +151,25 @@ const getRelatedArtists = async (token, artistId) => {
 
 // getRelatedArtists(token, "0TnOYISbd1XYRBk9myaseg");
 
+//get several tracks' audio features
+const getSeveralTracksFeatures = async (token, trackIds) => {
+    const idsString = trackIds.join(',');
+    try {
+      const { data } = await axios.get(
+        `https://api.spotify.com/v1/audio-features?ids=${idsString}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching top artists:", error);
+      throw error;
+    }
+  };
 
 // -------------------------- openai api requests -------------------------------//
 //GPT wrapper - easily edit this later in case openai changes the format lmao
@@ -154,7 +207,7 @@ const getThankYouText = async (userName, artistName, genres, index) => {
 // 2nd message: artist recommendations
 const getRecommendationsText = async (artistName, genres, relatedArtists) => {
   const systemPrompt = `You are ${artistName}. Talk like how ${artistName} talks based on their interviews, tweets etc. You are talking to a fan who loves your music. Your genres are an artist in ${genres}, use a tone similar to ${genres}.`;
-  let prompt = `No need to greet the fan. Write a short message recommending similar artists: ${relatedArtists} to the fan.`;
+  let prompt = `No need to greet the fan. Write a message recommending similar artists: ${relatedArtists} to the fan.`;
 
   prompt = systemPrompt + prompt;
 
@@ -164,10 +217,23 @@ const getRecommendationsText = async (artistName, genres, relatedArtists) => {
 
 // getRecommendationsText('Kanye West', ['hip hop', 'chicago rap'], ['Drake, Nicki Minaj', 'Lil Uzi Vert']);
 
-// 2. get artist recommendations - spotify api endpoint + gpt chatcompletions
+// 3. wikimedia api + chatcompletions - fun fact or tell story about life - this the real yapping
 
-// 3. get fun fact - google search + gpt chatcompletions
+// 4. wikimedia api + chatcompletion - most recently what are they up to
+
+//possibly
+// 5. reddit api + chatcompletions - sentiment analysis ? on what people are saying about artist
+//3rd message: upcoming events
+// const getUpcomingEventsText = async(artistName, genres, upcomingEvents) => {
+//     const systemPrompt = `You are ${artistName}. Talk like how ${artistName} talks based on their interviews, tweets etc. You are talking to a fan who loves your music. Your genres are an artist in ${genres}, use a tone similar to ${genres}.`;
+//     let prompt = `No need to greet the fan. Write a message informing the fan about upcoming events: ${upcomingEvents}.`;
+
+//     const response = await getGPTresponse(prompt);
+//     return response;
+// }
 
 //can probably do this later, a bit complicated
 // 4. upcoming events - get user's location, search songkick for upcoming concerts, check whether they overlap with user's location, return to user + chat completions
 //openai api requests
+
+//get news with serpapi
