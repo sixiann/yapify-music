@@ -54,17 +54,32 @@ app.post("/get-current-artists", async (req, res) => {
 
   //get user's top tracks
   const userCurrentTracksData = await getCurrentTracksFromSpotify(token);
-  const userCurrentTracksIds = userCurrentTracksData.items.map((track) => track.id);
+  const userCurrentTracksIds = userCurrentTracksData.items.map(
+    (track) => track.id
+  );
 
-  const features = await getSeveralTracksFeatures(token, userCurrentTracksIds);
-  console.log(features);
-  //for each artist: 
+  const trackFeatures = await getSeveralTracksFeatures(
+    token,
+    userCurrentTracksIds
+  );
+  const trackFeatureAverages = await getTrackFeatureAverages(
+    trackFeatures.audio_features
+  );
+  const trackFeatureSummary = await getTrackFeatureSummary(
+    trackFeatureAverages
+  );
+
+  const songsPersonalityMessages = await getSongsPersonalityMessages(
+    trackFeatureSummary
+  );
+  console.log(songsPersonalityMessages);
+  //for each artist:
   //pass userName, artistname, artistIndex, genres to getThankYouText function
   //call getRelated artists
   //pass relatedArtists to the getRecommendationsText function
-  
-  //pass list of tracks to getseveraltracks audio features 
-  //pass results to dataprocessing function 
+
+  //pass list of tracks to getseveraltracks audio features
+  //pass results to dataprocessing function
   const data = "hello";
   res.status(200).json(data);
 });
@@ -141,7 +156,6 @@ const getRelatedArtists = async (token, artistId) => {
         },
       }
     );
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching top artists:", error);
@@ -149,27 +163,24 @@ const getRelatedArtists = async (token, artistId) => {
   }
 };
 
-// getRelatedArtists(token, "0TnOYISbd1XYRBk9myaseg");
-
 //get several tracks' audio features
 const getSeveralTracksFeatures = async (token, trackIds) => {
-    const idsString = trackIds.join(',');
-    try {
-      const { data } = await axios.get(
-        `https://api.spotify.com/v1/audio-features?ids=${idsString}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(data);
-      return data;
-    } catch (error) {
-      console.error("Error fetching top artists:", error);
-      throw error;
-    }
-  };
+  const idsString = trackIds.join(",");
+  try {
+    const { data } = await axios.get(
+      `https://api.spotify.com/v1/audio-features?ids=${idsString}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error("Error fetching top artists:", error);
+    throw error;
+  }
+};
 
 // -------------------------- openai api requests -------------------------------//
 //GPT wrapper - easily edit this later in case openai changes the format lmao
@@ -199,11 +210,6 @@ const getThankYouText = async (userName, artistName, genres, index) => {
   return response;
 };
 
-// getThankYouText('Lexa', 'Drake', ['Hip Hop', 'Rap'], 1).then(() => {
-// }).catch((err) => {
-//     console.error('Error:', err);
-// });
-
 // 2nd message: artist recommendations
 const getRecommendationsText = async (artistName, genres, relatedArtists) => {
   const systemPrompt = `You are ${artistName}. Talk like how ${artistName} talks based on their interviews, tweets etc. You are talking to a fan who loves your music. Your genres are an artist in ${genres}, use a tone similar to ${genres}.`;
@@ -215,7 +221,80 @@ const getRecommendationsText = async (artistName, genres, relatedArtists) => {
   return response;
 };
 
-// getRecommendationsText('Kanye West', ['hip hop', 'chicago rap'], ['Drake, Nicki Minaj', 'Lil Uzi Vert']);
+// song message: audio features
+const getSongsPersonalityMessages = async (trackFeatureSummary) => {
+  let prompt =
+    "You are the user's FBI agent, it's the meme where you are watching them and analysing them. Use a sarcastic, humorous, and Gen Z sounding tone.";
+  prompt += `Based on the user's listening habits: ${trackFeatureSummary}, generate a possible conversation between you and the user where you are roasting them for the features. Mention all the features across 3 messages. Do NOT mention specific artists or songs. Do NOT use characters like *. Do NOT use gendered language. Rephrase the words "above average", "low", "high", "average", etc. `;
+  prompt += `Return it in this exact format, with linebreaks between the messages: GPTMessage: _ \n userMessage: _, \n GPTMessage: _, \n userMessage: _, \n GPTMessage:_`;
+  prompt += "Include the user's replies to your three messages! Important!";
+
+  const response = await getGPTresponse(prompt);
+
+  //convert to messages format
+  let messages = [];
+  let listMessages = response.split("\n"); // Split by linebreak
+  listMessages.forEach((msg) => {
+    let split = msg.split(":");
+    if (split[0] !== "") {
+      messages.push({ [split[0]]: split[1] });
+    }
+  });
+
+  return messages;
+};
+
+// --------------- helper functions -------------------------- //
+
+//get the average of features
+const getTrackFeatureAverages = async (trackFeatures) => {
+  let sums = {
+    danceability: 0,
+    energy: 0,
+    loudness: 0,
+    speechiness: 0,
+    acousticness: 0,
+    instrumentalness: 0,
+    liveness: 0,
+    valence: 0,
+  };
+
+  // Iterate over each track and sum up the values
+  trackFeatures.forEach((track) => {
+    Object.keys(sums).forEach((key) => {
+      sums[key] += track[key];
+    });
+  });
+
+  // Calculate the averages
+  const numTracks = trackFeatures.length;
+  let averages = {};
+  Object.keys(sums).forEach((key) => {
+    averages[key] = sums[key] / numTracks;
+  });
+
+  return averages;
+};
+
+//put features into english words to pass to gpt
+const getTrackFeatureSummary = async (trackFeatureAverages) => {
+  let summary = "";
+  Object.entries(trackFeatureAverages).forEach(([feature, value]) => {
+    if (feature !== "loudness" && feature !== "speechiness") {
+      let featureString = feature === "valence" ? "happiness" : feature;
+      if (value >= 0.75) {
+        summary += `very high ${featureString}\n`;
+      } else if (value >= 0.5) {
+        summary += `above average ${featureString}\n`;
+      } else if (value >= 0.25) {
+        summary += `average ${featureString}\n`;
+      } else {
+        summary += `low ${featureString}\n`;
+      }
+    }
+  });
+  return summary;
+};
 
 // 3. wikimedia api + chatcompletions - fun fact or tell story about life - this the real yapping
 
@@ -223,17 +302,3 @@ const getRecommendationsText = async (artistName, genres, relatedArtists) => {
 
 //possibly
 // 5. reddit api + chatcompletions - sentiment analysis ? on what people are saying about artist
-//3rd message: upcoming events
-// const getUpcomingEventsText = async(artistName, genres, upcomingEvents) => {
-//     const systemPrompt = `You are ${artistName}. Talk like how ${artistName} talks based on their interviews, tweets etc. You are talking to a fan who loves your music. Your genres are an artist in ${genres}, use a tone similar to ${genres}.`;
-//     let prompt = `No need to greet the fan. Write a message informing the fan about upcoming events: ${upcomingEvents}.`;
-
-//     const response = await getGPTresponse(prompt);
-//     return response;
-// }
-
-//can probably do this later, a bit complicated
-// 4. upcoming events - get user's location, search songkick for upcoming concerts, check whether they overlap with user's location, return to user + chat completions
-//openai api requests
-
-//get news with serpapi
