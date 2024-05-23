@@ -1,6 +1,8 @@
 // import "./App.css";
 import { useEffect, useState } from "react";
 import LoginPage from "./LoginPage";
+import ChatsPage from "./ChatsPage";
+import Button from "./components/Button";
 import { getTokenFromUrl, getCurrentArtists } from "./api";
 
 function App() {
@@ -15,16 +17,18 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
+    <div className="">
 
         {!token ? (
           <LoginPage />
         ) : (
           <>
-            <h1>Log out</h1>
-            <button onClick={logout}>Logout</button>
-            
-            <button onClick={() => getCurrentArtists(token)}>Get current Artists</button>
+            <div className="w-full flex">
+              <Button className="ml-auto mt-2 mr-2" text="Logout" onClick={logout}></Button>
+            </div>
+
+            <ChatsPage/>
+            {/* <button onClick={() => getCurrentArtists(token)}>Get current Artists</button> */}
 
 
           </>

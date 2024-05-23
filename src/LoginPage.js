@@ -1,11 +1,13 @@
 import React from "react";
 import { login } from "./api";
+import Button from "./components/Button";
 import { TypeAnimation } from "react-type-animation";
 
 function LoginPage() {
   return (
     <>
-      <div className="lg:px-28 xl:px-60 container">
+    <div className = "h-screen flex items-center justify-center">
+      <div className="lg:px-28 xl:px-60 container ">
         <div className="window">
           <div className="title-bar bg-indigo-400">
             <button aria-label="Close" className="clos"></button>
@@ -26,14 +28,10 @@ function LoginPage() {
               ]}
               speed={60}
             />
-            <button
-              className="btn mt-5 bg-indigo-200 hover:bg-indigo-500 hover:text-white"
-              onClick={login}
-            >
-              Login
-            </button>
+            <Button className="mt-5" text="Login" onClick = {login}></Button>
           </div>
         </div>
+      </div>
       </div>
     </>
   );
