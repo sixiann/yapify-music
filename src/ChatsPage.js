@@ -48,8 +48,7 @@ function ChatsPage() {
             message: `choice ${1}`,
             position: "single",
           }}
-          style={{ cursor: 'pointer' }}
-
+          style={{ cursor: "pointer" }}
         >
           <Avatar
             name="me"
@@ -66,7 +65,7 @@ function ChatsPage() {
             message: `choice ${2}`,
             position: "single",
           }}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: "pointer" }}
         >
           <Avatar name="me" src={user.imageUrl} />
         </Message>
@@ -76,7 +75,7 @@ function ChatsPage() {
 
   return (
     <>
-      <div className="p-7 pt-9">
+      <div className="px-4 pt-2 container mx-auto ">
         <div className="title-bar bg-blue-300">
           <button aria-label="Close" className="clos"></button>
           <h1 className="title">Yapify</h1>
@@ -86,13 +85,14 @@ function ChatsPage() {
         <MainContainer
           responsive
           style={{
-            height: "500px",
+            height: "85vh",
             borderColor: "black",
             borderWidth: "1.5px",
           }}
         >
           <Sidebar position="left">
             <Search placeholder="Search..." />
+
             <ConversationList>
               {Object.keys(artists).map((artist, index) => (
                 <Conversation
@@ -116,7 +116,7 @@ function ChatsPage() {
             <ChatContainer>
               <ConversationHeader>
                 <ConversationHeader.Back
-                  // onClick={() => setActiveArtist(null)}
+                onClick={() => setActiveArtist(null)} //remember to change this to display for small screens
                 />
                 <Avatar
                   name={activeArtist}
@@ -156,6 +156,26 @@ function ChatsPage() {
               <MessageInput />
             </ChatContainer>
           )}
+
+          {/* before user has clicked anything */}
+          {!activeArtist && (
+            <ChatContainer>
+              <MessageList key="2">
+                <MessageList.Content
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    height: "100%",
+                    textAlign: "center",
+                    fontSize: "1.2em",
+                  }}
+                >
+                  Click on a chat to start!
+                </MessageList.Content>
+              </MessageList>
+            </ChatContainer>
+          )}
         </MainContainer>
       </div>
     </>
@@ -163,34 +183,3 @@ function ChatsPage() {
 }
 
 export default ChatsPage;
-
-{
-  /* <div className="lg:px-28 xl:px-60 container mx-auto flex flex-row justify-center">
-        <div class="window w-2">
-          <div class="title-bar">
-            <button aria-label="Close" class="close"></button>
-            <h1 class="title">Window With Stuff</h1>
-            <button aria-label="Resize" class="resize"></button>
-          </div>
-          <div class="separator"></div>
-
-          <div class="window-pane">heee</div>
-        </div>{" "}
-        <div className="window">
-          <div className="title-bar bg-indigo-400">
-            <button aria-label="Close" className="clos"></button>
-            <h1 className="title">Yapify</h1>
-            <button aria-label="Resize" disabled className="hidden"></button>
-          </div>
-          <div className="separator"></div>
-          <div className=" window-pane flex flex-col justify-center text-center items-center">
-            gdfgjljk
-          </div>
-          <div className="separator"></div>
-
-          <div className=" window-pane flex flex-col justify-center text-center items-center">
-            gdfgjljk
-          </div>
-        </div>
-      </div> */
-}
