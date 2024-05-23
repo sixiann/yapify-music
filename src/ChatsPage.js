@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable no-lone-blocks */
+import React, { useState } from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Sidebar,
@@ -15,139 +16,156 @@ import {
   MessageSeparator,
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
+import { artists, user } from "./fakeData";
 
 function ChatsPage() {
-  
+  const [activeArtist, setActiveArtist] = useState(null);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [displayedMessages, setDisplayedMessages] = useState([]);
+  const handleConversationClick = (artist) => {
+    setActiveArtist(artist);
+    setCurrentMessageIndex(0);
+    setDisplayedMessages([artists[artist].messages[0]]); // Initialize with the first incoming message
+  };
+
+  const handleUserChoice = (choice) => {
+    setDisplayedMessages([...displayedMessages, choice]);
+    setCurrentMessageIndex(currentMessageIndex + 1);
+  };
+
+  const renderUserChoices = () => {
+    const displayedMessageSet = new Set(displayedMessages);
+    const nextMessages = artists[activeArtist].messages.filter(
+      (msg) => !displayedMessageSet.has(msg)
+    );
+    return (
+      <div>
+        <Message
+          key={0}
+          onClick={() => handleUserChoice(nextMessages[0])}
+          model={{
+            direction: "outgoing",
+            message: `choice ${1}`,
+            position: "single",
+          }}
+          style={{ cursor: 'pointer' }}
+
+        >
+          <Avatar
+            name="me"
+            src={
+              "https://wallpapers.com/images/featured/blank-white-7sn5o1woonmklx1h.jpg"
+            }
+          />
+        </Message>
+        <Message
+          key={0}
+          onClick={() => handleUserChoice(nextMessages[0])}
+          model={{
+            direction: "outgoing",
+            message: `choice ${2}`,
+            position: "single",
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <Avatar name="me" src={user.imageUrl} />
+        </Message>
+      </div>
+    );
+  };
+
   return (
     <>
-    
+      <div className="p-7 pt-9">
+        <div className="title-bar bg-blue-300">
+          <button aria-label="Close" className="clos"></button>
+          <h1 className="title">Yapify</h1>
+          <button aria-label="Resize" disabled className="hidden"></button>
+        </div>
 
-    <div className = "p-7 pt-9">
-    <div className="title-bar bg-blue-300">
-            <button aria-label="Close" className="clos"></button>
-            <h1 className="title">Yapify</h1>
-            <button aria-label="Resize" disabled className="hidden"></button>
-          </div>
-    
-      <MainContainer
-        responsive
-        style={{
+        <MainContainer
+          responsive
+          style={{
             height: "500px",
             borderColor: "black",
             borderWidth: "1.5px",
-        }}
-      >
-        
-        <Sidebar position="left">
-          <Search placeholder="Search..." />
-          <ConversationList>
-            <Conversation
-              info="Yes i can do it for you"
-              lastSenderName="Lilly"
-              name="Lilly"
-              
-            >
-              <Avatar
-                name="Lilly"
-                src="https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg"
-                status="available"
-              />
-            </Conversation>
-            <Conversation
-              info="Yes i can do it for you"
-              lastSenderName="Joe"
-              name="Joe"
-            >
-              <Avatar
-                name="Joe"
-                src="https://chatscope.io/storybook/react/assets/joe-v8Vy3KOS.svg"
-                status="dnd"
-              />
-            </Conversation>
-          </ConversationList>
-        </Sidebar>
-        <ChatContainer>
-          <ConversationHeader
-          >
-            
-            <ConversationHeader.Back />
-            
-            <Avatar
-              name="Zoe"
-              src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-            />
-            <ConversationHeader.Content
-              info="Active 10 mins ago"
-              userName="Zoe"
-            />
-            <ConversationHeader.Actions></ConversationHeader.Actions>
-          </ConversationHeader>
-          <MessageList
-            typingIndicator={<TypingIndicator content="Zoe is typing" />}
-          >
-            <MessageSeparator content="Saturday, 30 November 2019" />
-            <Message
-              model={{
-                direction: "incoming",
-                message: "Hello my friend",
-                position: "single",
-              }}
-            >
-              <Avatar
-                name="Zoe"
-                src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-              />
-               
-            </Message>
-            <Message
-              avatarSpacer
-              model={{
-                direction: "outgoing",
-                message: "Hello my friend",
-                position: "single",
-                sender: "Patrik",
-                sentTime: "15 mins ago",
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: "incoming",
-                message: "Hello my friend",
-                position: "normal",
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: "incoming",
-                message: "Hello my friend",
-                position: "normal",
-                sender: "Zoe",
-                sentTime: "15 mins ago",
-              }}
-            />
+          }}
+        >
+          <Sidebar position="left">
+            <Search placeholder="Search..." />
+            <ConversationList>
+              {Object.keys(artists).map((artist, index) => (
+                <Conversation
+                  key={index}
+                  info={`I'm #${index + 1}!!`}
+                  lastSenderName={artist}
+                  name={artist}
+                  onClick={() => handleConversationClick(artist)}
+                >
+                  <Avatar
+                    name={artist}
+                    src={artists[artist].imageUrl}
+                    status="available"
+                  />
+                </Conversation>
+              ))}
+            </ConversationList>
+          </Sidebar>
 
-            <Message
-              model={{
-                direction: "outgoing",
-                message: "Hello my friend",
-                position: "last",
-                sender: "Zoe",
-                sentTime: "15 mins ago",
-              }}
-            >
-              <Avatar
-                name="Zoe"
-                src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-              />
-            </Message>
-          </MessageList>
-          <MessageInput/>
-        </ChatContainer>
-      </MainContainer>
+          {activeArtist && (
+            <ChatContainer>
+              <ConversationHeader>
+                <ConversationHeader.Back
+                  // onClick={() => setActiveArtist(null)}
+                />
+                <Avatar
+                  name={activeArtist}
+                  src={artists[activeArtist].imageUrl}
+                />
+                <ConversationHeader.Content
+                  info="online now..."
+                  userName={activeArtist}
+                />
+                <ConversationHeader.Actions></ConversationHeader.Actions>
+              </ConversationHeader>
+              <MessageList
+                typingIndicator={
+                  <TypingIndicator content={`${activeArtist} is typing`} />
+                }
+              >
+                <MessageSeparator content="Saturday, 30 November 2019" />
+                {displayedMessages.map((msg, index) => (
+                  <Message
+                    key={index}
+                    model={{
+                      direction: "incoming",
+                      message: msg,
+                      position: "single",
+                    }}
+                  >
+                    <Avatar
+                      name={activeArtist}
+                      src={artists[activeArtist].imageUrl}
+                    />
+                  </Message>
+                ))}
+                {currentMessageIndex <
+                  artists[activeArtist].messages.length - 1 &&
+                  renderUserChoices()}
+              </MessageList>
+              <MessageInput />
+            </ChatContainer>
+          )}
+        </MainContainer>
       </div>
-      {/* <div className="lg:px-28 xl:px-60 container mx-auto flex flex-row justify-center">
+    </>
+  );
+}
+
+export default ChatsPage;
+
+{
+  /* <div className="lg:px-28 xl:px-60 container mx-auto flex flex-row justify-center">
         <div class="window w-2">
           <div class="title-bar">
             <button aria-label="Close" class="close"></button>
@@ -174,9 +192,5 @@ function ChatsPage() {
             gdfgjljk
           </div>
         </div>
-      </div> */}
-    </>
-  );
+      </div> */
 }
-
-export default ChatsPage;

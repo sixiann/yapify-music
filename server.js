@@ -21,6 +21,23 @@ app.listen(5000, () => console.log(`Server is running on ${port}`));
 
 // ---------------------------- server's endpoint ---------------------------- //
 // put all spotify api requests here since the token is passed here
+
+//returns: 
+// {
+//   artists:{
+//     artisName1 : messages: [message1, message2, message3, message4]
+                    // imageUrl: "",
+                    // spotifyLink: ""
+//     artisName2 : [message1, message2, message3, message4]
+//   }
+
+//   songs: [[gpt, message1], [user, message1], [gpt, message2], [user, message2]]
+    //  user: {
+    //   name: userName,
+    //   imgUrl: userImage
+    //  }
+// }
+
 app.post("/get-current-artists", async (req, res) => {
   const { token } = req.body;
 
