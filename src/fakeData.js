@@ -19,7 +19,67 @@ const artists = {
       ],
       imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
       spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
-    }
+    },
+    artistName3: {
+        messages: [
+          "Hello! How are you enjoying the tunes?",
+          "I'm so glad you like my work!",
+          "Have you checked out my tour dates?",
+          "Stay awesome and keep listening!"
+        ],
+        imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
+        spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
+      },
+      artistName4: {
+        messages: [
+          "Hello! How are you enjoying the tunes?",
+          "I'm so glad you like my work!",
+          "Have you checked out my tour dates?",
+          "Stay awesome and keep listening!"
+        ],
+        imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
+        spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
+      },
+      artistName5: {
+        messages: [
+          "Hello! How are you enjoying the tunes?",
+          "I'm so glad you like my work!",
+          "Have you checked out my tour dates?",
+          "Stay awesome and keep listening!"
+        ],
+        imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
+        spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
+      },
+      artistName6: {
+        messages: [
+          "Hello! How are you enjoying the tunes?",
+          "I'm so glad you like my work!",
+          "Have you checked out my tour dates?",
+          "Stay awesome and keep listening!"
+        ],
+        imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
+        spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
+      },
+      artistName7: {
+        messages: [
+          "Hello! How are you enjoying the tunes?",
+          "I'm so glad you like my work!",
+          "Have you checked out my tour dates?",
+          "Stay awesome and keep listening!"
+        ],
+        imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
+        spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
+      },
+      artistName8: {
+        messages: [
+          "Hello! How are you enjoying the tunes?",
+          "I'm so glad you like my work!",
+          "Have you checked out my tour dates?",
+          "Stay awesome and keep listening!"
+        ],
+        imageUrl: "https://media.glamour.com/photos/664c9a296649bb42ec537410/master/w_2560%2Cc_limit/GettyImages-2153893586.jpg",
+        spotifyLink: "https://www.glamour.com/story/anne-hathaway-shirt-dress-bulgari"
+      }
   };
   
   // Dummy data for song conversations

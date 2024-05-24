@@ -1,6 +1,6 @@
 import React from "react";
-import { login } from "./api";
-import Button from "./components/Button";
+import { login } from "../api";
+import Button from "../components/Button";
 import { TypeAnimation } from "react-type-animation";
 
 function LoginPage() {
@@ -16,11 +16,6 @@ function LoginPage() {
           </div>
           <div className="separator"></div>
 
-          {/* <div className="details-bar bg-indigo-200">
-            <span>major</span>
-            <span>bag</span>
-            <span>alert</span>
-          </div> */}
           <div className=" window-pane flex flex-col justify-center text-center items-center py-24">
             <TypeAnimation
               sequence={[

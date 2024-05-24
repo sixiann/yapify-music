@@ -16,7 +16,8 @@ import {
   MessageSeparator,
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import { artists, user } from "./fakeData";
+import DefaultChatContainer from "../components/DefaultChatContainer";
+import { artists, user } from "../fakeData";
 
 function ChatsPage() {
   const [activeArtist, setActiveArtist] = useState(null);
@@ -159,22 +160,7 @@ function ChatsPage() {
 
           {/* before user has clicked anything */}
           {!activeArtist && (
-            <ChatContainer>
-              <MessageList key="2">
-                <MessageList.Content
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    height: "100%",
-                    textAlign: "center",
-                    fontSize: "1.2em",
-                  }}
-                >
-                  Click on a chat to start!
-                </MessageList.Content>
-              </MessageList>
-            </ChatContainer>
+            <DefaultChatContainer />
           )}
         </MainContainer>
       </div>

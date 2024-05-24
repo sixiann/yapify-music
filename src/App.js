@@ -1,7 +1,7 @@
 // import "./App.css";
 import { useEffect, useState } from "react";
-import LoginPage from "./LoginPage";
-import ChatsPage from "./ChatsPage";
+import LoginPage from "./pages/LoginPage";
+import ChatsPage from "./pages/ChatsPage";
 import Button from "./components/Button";
 import { getTokenFromUrl, getCurrentArtists } from "./api";
 
