@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import ChatsPage from "./pages/ChatsPage";
 import Button from "./components/Button";
-import { getTokenFromUrl, getCurrentArtists } from "./api";
+import {
+  getTokenFromUrl,
+  getCurrentArtists,
+  getUserProfile,
+  getThankYouText,
+  getRecommendationsText,
+  getSongsPersonalityMessages
+} from "./api";
 
 function App() {
   const [token, setToken] = useState("");
@@ -18,21 +25,43 @@ function App() {
 
   return (
     <div className="">
+      {!token ? (
+        <LoginPage />
+      ) : (
+        <>
+          <div className="w-full flex">
+            <Button
+              className="ml-auto mt-2 mr-2"
+              text="Logout"
+              onClick={logout}
+            ></Button>
+          </div>
 
-        {!token ? (
-          <LoginPage />
-        ) : (
-          <>
-            <div className="w-full flex">
-              <Button className="ml-auto mt-2 mr-2" text="Logout" onClick={logout}></Button>
-            </div>
+          <ChatsPage token={token} />
+          
+          {/* 
 
-            <ChatsPage/>
-            {/* <button onClick={() => getCurrentArtists(token)}>Get current Artists</button> */}
+          <Button
+            onClick={() => getUserProfile(token)}
+            text="Get user profile"
+          ></Button>
 
+          <Button
+            onClick={() => getThankYouText("4AK6F7OLvEQ5QYCBNiQWHq")}
+            text="Get thank you text"
+          ></Button>
 
-          </>
-        )}
+          <Button
+            onClick={() => getRecommendationsText("4AK6F7OLvEQ5QYCBNiQWHq")}
+            text="Get recommendations"
+          ></Button>
+
+          <Button
+            onClick={() => getSongsPersonalityMessages()}
+            text="Get songs messages"
+          ></Button> */}
+        </>
+      )}
     </div>
   );
 }
