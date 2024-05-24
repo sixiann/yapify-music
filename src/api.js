@@ -45,8 +45,6 @@ const getCurrentArtists = async (token) => {
         token,
       }
     );
-
-    console.log("get current artists success");
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -55,5 +53,73 @@ const getCurrentArtists = async (token) => {
   }
 };
 
+const getUserProfile = async (token) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/get-user-profile",
+      {
+        token,
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
+};
 
-export { login, getTokenFromUrl, getCurrentArtists };
+const getThankYouText = async (artistId) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/get-thankyou-text",
+      {
+        artistId,
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching thank you text:", error);
+    throw error;
+  }
+};
+
+const getRecommendationsText = async (artistId) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/get-recommendations-text",
+      {
+        artistId,
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recommendations text:", error);
+    throw error;
+  }
+};
+
+const getSongsPersonalityMessages = async () => {
+  try {
+    const response = await axios.get(
+      "http://localhost:5000/get-songs-personality-messages"
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching songs text:", error);
+    throw error;
+  }
+};
+
+export {
+  login,
+  getTokenFromUrl,
+  getCurrentArtists,
+  getUserProfile,
+  getThankYouText,
+  getRecommendationsText,
+  getSongsPersonalityMessages
+};
