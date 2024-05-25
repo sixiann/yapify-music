@@ -71,12 +71,20 @@ function ChatsPage({ token }) {
     }
   };
 
-  if (loading) {
-    <l-waveform size="35" stroke="3.5" speed="1" color="black"></l-waveform>;
-  }
   return (
     <>
-      <div className="px-4 pt-2 container mx-auto ">
+      <div className="px-4 pt-2 container mx-auto">
+        {loading && (
+          <div className="flex justify-center items-center text-center h-[90vh]">
+            <l-waveform
+              size="100"
+              stroke="3.5"
+              speed="1"
+              color="black"
+            ></l-waveform>
+          </div>
+        )}
+
         <div className="title-bar bg-blue-300">
           <button aria-label="Close" className="clos"></button>
           <h1 className="title">Yapify</h1>
@@ -170,7 +178,6 @@ function ChatsPage({ token }) {
             </ChatContainer>
           )}
 
-          {/* before user has clicked anything */}
           {!activeArtist && <DefaultChatContainer />}
         </MainContainer>
       </div>
