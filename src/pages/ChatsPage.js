@@ -18,8 +18,11 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import DefaultChatContainer from "../components/DefaultChatContainer";
 import { getCurrentArtists, getUserProfile, getThankYouText } from "../api";
+import { waveform } from "ldrs";
+waveform.register();
 
 function ChatsPage({ token }) {
+  const [loading, setLoading] = useState(true);
   const [artists, setArtists] = useState([]); //artists in sidebar (<conversationlist>)
   const [activeArtist, setActiveArtist] = useState(null); //artist i'm chatting with
   const [user, setUser] = useState({});
@@ -30,10 +33,12 @@ function ChatsPage({ token }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const artistsData = await getCurrentArtists(token);
         setArtists(artistsData.data);
         const userData = await getUserProfile(token);
         setUser(userData.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching artists:", error);
       }
@@ -65,6 +70,10 @@ function ChatsPage({ token }) {
       }
     }
   };
+
+  if (loading) {
+    <l-waveform size="35" stroke="3.5" speed="1" color="black"></l-waveform>;
+  }
   return (
     <>
       <div className="px-4 pt-2 container mx-auto ">
