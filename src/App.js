@@ -9,8 +9,11 @@ import {
   getUserProfile,
   getThankYouText,
   getRecommendationsText,
-  getSongsPersonalityMessages
+  getSongsPersonalityMessages,
 } from "./api";
+
+
+// Default values shown
 
 function App() {
   const [token, setToken] = useState("");
@@ -29,17 +32,28 @@ function App() {
         <LoginPage />
       ) : (
         <>
+        
           <div className="w-full flex">
             <Button
               className="ml-auto mt-2 mr-2"
               text="Logout"
               onClick={logout}
             ></Button>
+
+            
           </div>
 
           <ChatsPage token={token} />
-          
-          {/* 
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+{
+  /* 
 
           <Button
             onClick={() => getUserProfile(token)}
@@ -59,11 +73,5 @@ function App() {
           <Button
             onClick={() => getSongsPersonalityMessages()}
             text="Get songs messages"
-          ></Button> */}
-        </>
-      )}
-    </div>
-  );
+          ></Button> */
 }
-
-export default App;
