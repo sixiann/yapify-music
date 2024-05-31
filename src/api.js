@@ -45,7 +45,6 @@ const getCurrentArtists = async (token) => {
         token,
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching top artists:", error);
@@ -61,7 +60,6 @@ const getUserProfile = async (token) => {
         token,
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -77,7 +75,6 @@ const getThankYouText = async (artistId) => {
         artistId,
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching thank you text:", error);
@@ -93,7 +90,6 @@ const getRecommendationsText = async (artistId) => {
         artistId,
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching recommendations text:", error);
@@ -106,7 +102,6 @@ const getSongsPersonalityMessages = async () => {
     const response = await axios.get(
       "http://localhost:5000/get-songs-personality-messages"
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching songs text:", error);

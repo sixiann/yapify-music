@@ -1,5 +1,5 @@
 /* eslint-disable no-lone-blocks */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Sidebar,
@@ -28,6 +28,16 @@ function ChatsPage({ token }) {
   const [user, setUser] = useState({});
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [sidebarStyle, setSidebarStyle] = useState({});
+  const [chatContainerStyle, setChatContainerStyle] = useState({});
+  const [conversationContentStyle, setConversationContentStyle] = useState({});
+  const [conversationAvatarStyle, setConversationAvatarStyle] = useState({});
+  const isFirstRender = useRef(true);
+
+  const handleBackClick = () => setSidebarVisible(!sidebarVisible);
 
   //load sidebar artists
   useEffect(() => {
@@ -46,142 +56,206 @@ function ChatsPage({ token }) {
     fetchData();
   }, [token]);
 
-  const handleConversationClick = async (artist) => {
-    setActiveArtist(artist);
-    if (!messages[artists[artist].artistId]) {
-      setIsTyping(true);
-      try {
-        const response = await getThankYouText(artists[artist].artistId); // Call the getThankYouText function
-        setMessages((prevMessages) => ({
-          ...prevMessages,
-          [artists[artist].artistId]: [
-            ...(prevMessages[artists[artist].artistId] || []),
-            {
-              id: (prevMessages[artists[artist].artistId] || []).length,
-              artist,
-              message: response.data,
-            },
-          ],
-        }));
-      } catch (error) {
-        console.error("Error getting thank you text:", error);
-      } finally {
-        setIsTyping(false);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      const isMobileScreen = window.matchMedia("(max-width: 768px)").matches;
+      setIsMobile(isMobileScreen);
+      if (isMobileScreen) {
+        setSidebarVisible(true);
       }
+      isFirstRender.current = false;
     }
-  };
+
+    if (sidebarVisible) {
+      setSidebarStyle({
+        display: "flex",
+        flexBasis: "auto",
+        width: "100%",
+        maxWidth: "100%",
+      });
+
+      setConversationContentStyle({
+        display: "flex",
+      });
+
+      setConversationAvatarStyle({
+        marginRight: "1em",
+      });
+
+      setChatContainerStyle({
+        display: "none",
+      });
+    } else {
+      setSidebarStyle({});
+      setConversationContentStyle({});
+      setConversationAvatarStyle({});
+      setChatContainerStyle({});
+    }
+  }, [
+    sidebarVisible,
+    setSidebarVisible,
+    setConversationContentStyle,
+    setConversationAvatarStyle,
+    setSidebarStyle,
+    setChatContainerStyle,
+  ]);
+
+  const handleConversationClick = useCallback(
+    async (artist) => {
+      if (sidebarVisible) {
+        setSidebarVisible(false);
+      }
+
+      setActiveArtist(artist);
+      if (!messages[artists[artist].artistId]) {
+        setIsTyping(true);
+        try {
+          const response = await getThankYouText(artists[artist].artistId); // Call the getThankYouText function
+          setMessages((prevMessages) => ({
+            ...prevMessages,
+            [artists[artist].artistId]: [
+              ...(prevMessages[artists[artist].artistId] || []),
+              {
+                id: (prevMessages[artists[artist].artistId] || []).length,
+                artist,
+                message: response.data,
+              },
+            ],
+          }));
+        } catch (error) {
+          console.error("Error getting thank you text:", error);
+        } finally {
+          setIsTyping(false);
+        }
+      }
+    },
+    [
+      sidebarVisible,
+      setSidebarVisible,
+      setActiveArtist,
+      messages,
+      artists,
+      setIsTyping,
+      setMessages,
+      getThankYouText,
+    ]
+  );
 
   return (
-    <>
-      <div className="px-4 pt-2 container mx-auto">
-        {loading && (
-          <div className="flex justify-center items-center text-center h-[90vh]">
-            <l-waveform
-              size="100"
-              stroke="3.5"
-              speed="1"
-              color="black"
-            ></l-waveform>
-          </div>
-        )}
-
-        <div className="title-bar bg-blue-300">
-          <button aria-label="Close" className="clos"></button>
-          <h1 className="title">Yapify</h1>
-          <button aria-label="Resize" disabled className="hidden"></button>
+    <div className="px-4 pt-2 container mx-auto">
+      {loading ? (
+        <div className="flex justify-center items-center text-center h-[90vh]">
+          <l-waveform
+            size="100"
+            stroke="3.5"
+            speed="1"
+            color="black"
+          ></l-waveform>
         </div>
+      ) : (
+        <>
+          <div className="title-bar bg-blue-300">
+            <button aria-label="Close" className="clos"></button>
+            <h1 className="title">Yapify</h1>
+            <button aria-label="Resize" disabled className="hidden"></button>
+          </div>
 
-        <MainContainer
-          responsive
-          style={{
-            height: "85vh",
-            borderColor: "black",
-            borderWidth: "1.5px",
-          }}
-        >
-          <Sidebar position="left">
-            <Search placeholder="Search..." />
+          <MainContainer
+            responsive
+            style={{
+              height: "85vh",
+              borderColor: "black",
+              borderWidth: "1.5px",
+            }}
+          >
+            <Sidebar position="left" style={sidebarStyle}>
+              <Search placeholder="Search..." />
 
-            <ConversationList>
-              {Object.keys(artists).map((artist, index) => (
-                <Conversation
-                  key={index}
-                  info={`I'm #${index + 1}!!`}
-                  lastSenderName={artists[index].artistName}
-                  name={artists[index].artistName}
-                  onClick={() => handleConversationClick(artist)}
-                  style={{
-                    backgroundColor:
-                      activeArtist === artist ? "#c6e2f9" : "transparent",
-                  }}
-                >
-                  <Avatar
-                    name={artists[index].artistName}
-                    src={artists[index].artistImage}
-                    status="available"
-                  />
-                </Conversation>
-              ))}
-            </ConversationList>
-          </Sidebar>
-
-          {activeArtist && (
-            <ChatContainer>
-              <ConversationHeader>
-                <ConversationHeader.Back
-                  onClick={() => setActiveArtist(null)} //remember to change this to display for small screens
-                />
-                <Avatar
-                  name={artists[activeArtist].artistName}
-                  src={artists[activeArtist].artistImage}
-                />
-                <ConversationHeader.Content
-                  info="online now..."
-                  userName={artists[activeArtist].artistName}
-                />
-                <ConversationHeader.Actions></ConversationHeader.Actions>
-              </ConversationHeader>
-              <MessageList
-                typingIndicator={
-                  isTyping && activeArtist ? (
-                    <TypingIndicator
-                      content={`${
-                        artists.find(
-                          (a) => a.artistId === artists[activeArtist].artistId
-                        )?.artistName
-                      } is typing`}
+              <ConversationList>
+                {Object.keys(artists).map((artist, index) => (
+                  <Conversation
+                    key={index}
+                    onClick={() => handleConversationClick(artist)}
+                    style={{
+                      backgroundColor:
+                        activeArtist === artist ? "#c6e2f9" : "transparent",
+                    }}
+                  >
+                    <Avatar
+                      name={artists[index].artistName}
+                      src={artists[index].artistImage}
+                      status="available"
+                      style={conversationAvatarStyle}
                     />
-                  ) : null
-                }
-              >
-                <MessageSeparator content="Saturday, 30 November 2019" />
+                    <Conversation.Content
+                      name={artists[index].artistName}
+                      lastSenderName={artists[index].artistName}
+                      info={`I'm #${index + 1}!!`}
+                      style={conversationContentStyle}
+                    />
+                  </Conversation>
+                ))}
+              </ConversationList>
+            </Sidebar>
 
-                {activeArtist &&
-                  messages[artists[activeArtist].artistId] &&
-                  messages[artists[activeArtist].artistId].map((msg) => (
-                    <Message
-                      key={msg.id}
-                      model={{
-                        direction: "incoming",
-                        message: msg.message,
-                        position: "single",
-                      }}
-                    >
-                      <Avatar
-                        name={artists[msg.artist].artistName}
-                        src={artists[msg.artist].artistImage}
+            {activeArtist ? (
+              <ChatContainer style={chatContainerStyle}>
+                <ConversationHeader>
+                  <ConversationHeader.Back
+                    onClick={handleBackClick} //remember to change this to display for small screens
+                  />
+                  <Avatar
+                    name={artists[activeArtist].artistName}
+                    src={artists[activeArtist].artistImage}
+                  />
+                  <ConversationHeader.Content
+                    info="online now..."
+                    userName={artists[activeArtist].artistName}
+                  />
+                  <ConversationHeader.Actions></ConversationHeader.Actions>
+                </ConversationHeader>
+                <MessageList
+                  typingIndicator={
+                    isTyping && activeArtist ? (
+                      <TypingIndicator
+                        content={`${
+                          artists.find(
+                            (a) => a.artistId === artists[activeArtist].artistId
+                          )?.artistName
+                        } is typing`}
                       />
-                    </Message>
-                  ))}
-              </MessageList>
-              <MessageInput />
-            </ChatContainer>
-          )}
+                    ) : null
+                  }
+                >
+                  <MessageSeparator content="Saturday, 30 November 2019" />
 
-          {!activeArtist && <DefaultChatContainer />}
-        </MainContainer>
-      </div>
-    </>
+                  {activeArtist &&
+                    messages[artists[activeArtist].artistId] &&
+                    messages[artists[activeArtist].artistId].map((msg) => (
+                      <Message
+                        key={msg.id}
+                        model={{
+                          direction: "incoming",
+                          message: msg.message,
+                          position: "single",
+                        }}
+                      >
+                        <Avatar
+                          name={artists[msg.artist].artistName}
+                          src={artists[msg.artist].artistImage}
+                        />
+                      </Message>
+                    ))}
+                </MessageList>
+                <MessageInput />
+              </ChatContainer>
+            ) : (
+              !isMobile && <DefaultChatContainer />
+            )}
+          </MainContainer>
+        </>
+      )}
+    </div>
   );
 }
 
