@@ -17,7 +17,7 @@ import {
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
 import DefaultChatContainer from "../components/DefaultChatContainer";
-import { getCurrentArtists, getUserProfile, getThankYouText } from "../api";
+import { getCurrentArtists, getUserProfile, getThankYouText, getCurrentDateTime } from "../api";
 import { waveform } from "ldrs";
 waveform.register();
 
@@ -227,7 +227,7 @@ function ChatsPage({ token }) {
                     ) : null
                   }
                 >
-                  <MessageSeparator content="Saturday, 30 November 2019" />
+                  <MessageSeparator content={getCurrentDateTime()} />
 
                   {activeArtist &&
                     messages[artists[activeArtist].artistId] &&
