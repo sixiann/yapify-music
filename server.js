@@ -48,7 +48,25 @@ app.post("/get-current-artists", async (req, res) => {
   userToken = token;
 
   try {
-    const userCurrentArtistsData = await getCurrentArtistsFromSpotify(token);
+    // const userCurrentArtistsData = await getCurrentArtistsFromSpotify(token);
+    const userCurrentArtistsData = {
+      items: [
+        {
+          name: "Dummy Artist 1",
+          id: "dummy1",
+          genres: ["pop", "rock"],
+          images: [{ url: "https://example.com/dummy1.jpg" }],
+          external_urls: { spotify: "https://open.spotify.com/artist/dummy1" }
+        },
+        {
+          name: "Dummy Artist 2",
+          id: "dummy2",
+          genres: ["jazz", "blues"],
+          images: [{ url: "https://example.com/dummy2.jpg" }],
+          external_urls: { spotify: "https://open.spotify.com/artist/dummy2" }
+        }
+      ]
+    };
     const userCurrentArtists = [];
 
     userCurrentArtistsData.items.forEach((artist, index) => {
@@ -104,12 +122,13 @@ app.post("/get-thankyou-text", async (req, res) => {
   const userName = userData.userName;
 
   try {
-    const response = await getThankYouText(
-      userName,
-      artistName,
-      artistGenres,
-      artistIndex
-    );
+    // const response = await getThankYouText(
+    //   userName,
+    //   artistName,
+    //   artistGenres,
+    //   artistIndex
+    // );
+    const response = "yep this works";
     res.status(200).json({ success: true, data: response });
   } catch (error) {
     console.error("Error fetching artists from Spotify:", error);
@@ -121,21 +140,22 @@ app.post("/get-thankyou-text", async (req, res) => {
 
 //run when user clicks option when chatting
 app.post("/get-recommendations-text", async (req, res) => {
-  const { artistId } = req.body;
+  // const { artistId } = req.body;
 
-  const artistName = artistsData[artistId].artistName;
-  const artistGenres = artistsData[artistId].genres;
-  const relatedArtistsData = await getRelatedArtists(userToken, artistId);
-  const relatedArtists = relatedArtistsData.artists
-    .slice(0, 3)
-    .map((artist) => artist.name);
+  // const artistName = artistsData[artistId].artistName;
+  // const artistGenres = artistsData[artistId].genres;
+  // const relatedArtistsData = await getRelatedArtists(userToken, artistId);
+  // const relatedArtists = relatedArtistsData.artists
+  //   .slice(0, 3)
+  //   .map((artist) => artist.name);
 
   try {
-    const response = await getRecommendationsText(
-      artistName,
-      artistGenres,
-      relatedArtists
-    );
+    // const response = await getRecommendationsText(
+    //   artistName,
+    //   artistGenres,
+    //   relatedArtists
+    // );
+    const response = "yep this works";
     res.status(200).json({ success: true, data: response });
   } catch (error) {
     console.error("Error getting recommendations text:", error);

@@ -1,6 +1,7 @@
 /* eslint-disable no-lone-blocks */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+
 import {
   Sidebar,
   ChatContainer,
@@ -26,6 +27,7 @@ import {
 } from "../api";
 import { waveform } from "ldrs";
 waveform.register();
+
 
 function ChatsPage({ token }) {
   const [loading, setLoading] = useState(true);
@@ -200,11 +202,13 @@ function ChatsPage({ token }) {
             size="100"
             stroke="3.5"
             speed="1"
-            color="blue"
+            color="#48a8f7"
           ></l-waveform>
         </div>
       ) : (
         <>
+                        
+
           <MainContainer
             responsive
             style={{
@@ -213,7 +217,8 @@ function ChatsPage({ token }) {
           >
             <Sidebar position="left" style={sidebarStyle}>
               <ConversationHeader>
-                <ConversationHeader.Content userName="Your current top 10 artists" />
+                <ConversationHeader.Content userName="Your current top artists" />
+
               </ConversationHeader>
               <ConversationList>
                 {Object.keys(artists).map((artist, index) => (

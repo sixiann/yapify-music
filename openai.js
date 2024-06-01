@@ -45,7 +45,7 @@ const getGPTresponse = async (prompt) => {
     let prompt =
       "You are the user's FBI agent, it's the meme where you are watching them and analysing them. Use a sarcastic, humorous, and Gen Z sounding tone.";
     prompt += `Based on the user's listening habits: ${trackFeatureSummary}, generate a possible conversation between you and the user where you are roasting them for the features. Mention all the features across 3 messages. Do NOT mention specific artists or songs. Do NOT use characters like *. Do NOT use gendered language. Rephrase the words "above average", "low", "high", "average", etc. `;
-    prompt += `Return it in this exact format, with linebreaks between the messages: GPTMessage: _ \n userMessage: _, \n GPTMessage: _, \n userMessage: _, \n GPTMessage:_`;
+    prompt += `Return it in this exact format, with linebreaks between the messages: "incoming": _ \n "outgoing": _, \n "incoming": _, \n "outgoing": _, \n "incoming":_`;
     prompt += "Include the user's replies to your three messages! Important!";
   
     const response = await getGPTresponse(prompt);
