@@ -5,7 +5,7 @@ import {
   Sidebar,
   ChatContainer,
   Conversation,
-  Search,
+  VoiceCallButton,
   MessageInput,
   Avatar,
   Message,
@@ -47,7 +47,7 @@ function ChatsPage({ token }) {
   const isFirstRender = useRef(true);
 
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
-  
+
   //load sidebar artists
   useEffect(() => {
     const fetchData = async () => {
@@ -186,8 +186,6 @@ function ChatsPage({ token }) {
           },
         ],
       }));
-
-      
     } catch (error) {
       console.error("Error getting thank you text:", error);
     } finally {
@@ -202,28 +200,21 @@ function ChatsPage({ token }) {
             size="100"
             stroke="3.5"
             speed="1"
-            color="black"
+            color="blue"
           ></l-waveform>
         </div>
       ) : (
         <>
-          <div className="title-bar bg-blue-300">
-            <button aria-label="Close" className="clos"></button>
-            <h1 className="title">Yapify</h1>
-            <button aria-label="Resize" disabled className="hidden"></button>
-          </div>
-
           <MainContainer
             responsive
             style={{
               height: "85vh",
-              borderColor: "black",
-              borderWidth: "1.5px",
             }}
           >
             <Sidebar position="left" style={sidebarStyle}>
-              <Search placeholder="Search..." />
-
+              <ConversationHeader>
+                <ConversationHeader.Content userName="Your current top 10 artists" />
+              </ConversationHeader>
               <ConversationList>
                 {Object.keys(artists).map((artist, index) => (
                   <Conversation
@@ -254,9 +245,7 @@ function ChatsPage({ token }) {
             {activeArtist ? (
               <ChatContainer style={chatContainerStyle}>
                 <ConversationHeader>
-                  <ConversationHeader.Back
-                    onClick={handleBackClick} //remember to change this to display for small screens
-                  />
+                  <ConversationHeader.Back onClick={handleBackClick} />
                   <Avatar
                     name={artists[activeArtist].artistName}
                     src={artists[activeArtist].artistImage}
@@ -265,7 +254,15 @@ function ChatsPage({ token }) {
                     info="online now..."
                     userName={artists[activeArtist].artistName}
                   />
-                  <ConversationHeader.Actions></ConversationHeader.Actions>
+                  <ConversationHeader.Actions>
+                    <a
+                      target="_blank"
+                      href={artists[activeArtist].artistLink}
+                      rel="noreferrer"
+                    >
+                      <VoiceCallButton title="Go to Spotify Link" />
+                    </a>
+                  </ConversationHeader.Actions>
                 </ConversationHeader>
                 <MessageList
                   typingIndicator={
@@ -313,8 +310,8 @@ function ChatsPage({ token }) {
                   value={inputValue}
                   onSend={() => handleSend(activeArtist)}
                   disabled={inputDisabled[activeArtist]}
-                  sendDisabled = {sendDisabled[activeArtist]}
-                  />
+                  sendDisabled={sendDisabled[activeArtist]}
+                />
               </ChatContainer>
             ) : (
               !isMobile && <DefaultChatContainer />

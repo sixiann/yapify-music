@@ -88,12 +88,10 @@ app.post("/get-user-profile", async (req, res) => {
     res.status(200).json({ success: true, data: userData });
   } catch (error) {
     console.error("Error fetching user profile from Spotify:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching user profile from Spotify",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching user profile from Spotify",
+    });
   }
 });
 
