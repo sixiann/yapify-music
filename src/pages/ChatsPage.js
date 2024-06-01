@@ -37,6 +37,7 @@ function ChatsPage({ token }) {
   const [isMobile, setIsMobile] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [inputDisabled, setInputDisabled] = useState({});
+  const [sendDisabled, setSendDisabled] = useState({});
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [sidebarStyle, setSidebarStyle] = useState({});
@@ -131,6 +132,10 @@ function ChatsPage({ token }) {
             ],
           }));
           setInputValue("What are some other artists I can listen to?");
+          setSendDisabled((prevSendDisabled) => ({
+            ...prevSendDisabled,
+            [artist]: false,
+          }));
         } catch (error) {
           console.error("Error getting thank you text:", error);
         } finally {
@@ -308,6 +313,7 @@ function ChatsPage({ token }) {
                   value={inputValue}
                   onSend={() => handleSend(activeArtist)}
                   disabled={inputDisabled[activeArtist]}
+                  sendDisabled = {sendDisabled[activeArtist]}
                   />
               </ChatContainer>
             ) : (
