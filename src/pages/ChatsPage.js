@@ -24,6 +24,7 @@ import {
   getThankYouText,
   getCurrentDateTime,
   getRecommendationsText,
+  getSongsPersonalityMessages,
 } from "../api";
 import { waveform } from "ldrs";
 waveform.register();
@@ -155,6 +156,49 @@ function ChatsPage({ token }) {
     ]
   );
 
+
+  const handleFBIClick = useCallback(
+    async (artist) => {
+      if (sidebarVisible) {
+        setSidebarVisible(false);
+      }
+
+      setActiveArtist(artist);
+      if (!messages[artists[artist].artistId]) {
+        setIsTyping(true);
+        try {
+          const response = await getSongsPersonalityMessages(artists[artist].artistId); 
+          setMessages((prevMessages) => ({
+            ...prevMessages,
+            [artists[artist].artistId]: [
+              ...(prevMessages[artists[artist].artistId] || []),
+              {
+                id: (prevMessages[artists[artist].artistId] || []).length,
+                artist,
+                message: response.data,
+              },
+            ],
+          }));
+          
+          
+        } catch (error) {
+          console.error("Error getting thank you text:", error);
+        } finally {
+          setIsTyping(false);
+        }
+      }
+    },
+    [
+      sidebarVisible,
+      setSidebarVisible,
+      setActiveArtist,
+      messages,
+      artists,
+      setIsTyping,
+      setMessages,
+    ]
+  );
+
   const handleSend = async (artist) => {
     setMessages((prevMessages) => ({
       ...prevMessages,
@@ -213,37 +257,67 @@ function ChatsPage({ token }) {
                 height: "85vh",
               }}
             >
-                <Sidebar position="left" style={sidebarStyle}>
-                  <ConversationHeader>
-                    <ConversationHeader.Content userName="Your current top artists" />
-                  </ConversationHeader>
+              <Sidebar position="left" style={sidebarStyle}>
+                <ConversationHeader>
+                  <ConversationHeader.Content userName="Your listening habits" />
+                </ConversationHeader>
+                <Conversation
+                  key={0}
+                  onClick={() => handleFBIClick("0")}
+                  style={{
+                    backgroundColor:
+                      activeArtist === "0" ? "#c6e2f9" : "transparent",
+                  }}
+                >
+                  <Avatar
+                    src={
+                      artists[0].artistImage
+                    }
+                    status="available"
+                    style={conversationAvatarStyle}
+                  />
+                  <Conversation.Content
+                    name={artists[0].artistName}
+                    info="I'm always watching you..."
+                    style={conversationContentStyle}
+                  />
+                </Conversation>
+                <ConversationHeader>
+                  <ConversationHeader.Content userName="Your top artists" />
+                </ConversationHeader>
 
-                  <ConversationList>
-                    {Object.keys(artists).map((artist, index) => (
-                      <Conversation
-                        key={index}
-                        onClick={() => handleConversationClick(artist)}
-                        style={{
-                          backgroundColor:
-                            activeArtist === artist ? "#c6e2f9" : "transparent",
-                        }}
-                      >
-                        <Avatar
-                          name={artists[index].artistName}
-                          src={artists[index].artistImage}
-                          status="available"
-                          style={conversationAvatarStyle}
-                        />
-                        <Conversation.Content
-                          name={artists[index].artistName}
-                          lastSenderName={artists[index].artistName}
-                          info={`I'm #${index + 1}!!`}
-                          style={conversationContentStyle}
-                        />
-                      </Conversation>
-                    ))}
-                  </ConversationList>
-                </Sidebar>
+                <ConversationList>
+                  {Object.keys(artists).map(
+                    (artist, index) =>
+                      // Only render if index > 0
+                      index > 0 && (
+                        <Conversation
+                          key={index}
+                          onClick={() => handleConversationClick(artist)}
+                          style={{
+                            backgroundColor:
+                              activeArtist === artist
+                                ? "#c6e2f9"
+                                : "transparent",
+                          }}
+                        >
+                          <Avatar
+                            name={artists[index].artistName}
+                            src={artists[index].artistImage}
+                            status="available"
+                            style={conversationAvatarStyle}
+                          />
+                          <Conversation.Content
+                            name={artists[index].artistName}
+                            lastSenderName={artists[index].artistName}
+                            info={`I'm #${index + 1}!!`}
+                            style={conversationContentStyle}
+                          />
+                        </Conversation>
+                      )
+                  )}
+                </ConversationList>
+              </Sidebar>
 
               {activeArtist ? (
                 <ChatContainer style={chatContainerStyle}>
@@ -314,8 +388,8 @@ function ChatsPage({ token }) {
                     value={inputValue}
                     onSend={() => handleSend(activeArtist)}
                     disabled={inputDisabled[activeArtist]}
-                    sendDisabled={sendDisabled[activeArtist]}
-                  />
+                    sendDisabled={activeArtist === "0" ? true : sendDisabled[activeArtist]}
+                    />
                 </ChatContainer>
               ) : (
                 !isMobile && <DefaultChatContainer />

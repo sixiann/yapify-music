@@ -1,13 +1,9 @@
-// import "./App.css";
 import { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import ChatsPage from "./pages/ChatsPage";
 import Button from "./components/Button";
-
-// import Button from "./components/Button";
 import {
   getTokenFromUrl,
-  getSongsPersonalityMessages,
 } from "./api";
 
 
@@ -46,27 +42,3 @@ function App() {
 }
 
 export default App;
-
-{
-  /* 
-
-          <Button
-            onClick={() => getUserProfile(token)}
-            text="Get user profile"
-          ></Button>
-
-          <Button
-            onClick={() => getThankYouText("4AK6F7OLvEQ5QYCBNiQWHq")}
-            text="Get thank you text"
-          ></Button>
-
-          <Button
-            onClick={() => getRecommendationsText("4AK6F7OLvEQ5QYCBNiQWHq")}
-            text="Get recommendations"
-          ></Button>
-
-          <Button
-            onClick={() => getSongsPersonalityMessages()}
-            text="Get songs messages"
-          ></Button> */
-}
