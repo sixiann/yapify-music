@@ -2,12 +2,14 @@ import React from 'react';
 
 const Button = ({ className, text, onClick }) => {
   return (
+    <div className={`block p-0  ${className}`}>
     <button
-      className={`border-[#eff2f5] border  text-black bg-[#c7e3fa] py-2 px-7 hover:bg-[#71aad7] font-semibold ${className}`} 
+      className="text-black bg-[#c7e3fa] py-2 px-7 font-semibold"
       onClick={onClick}
     >
       {text}
     </button>
+    </div>
   );
 };
 

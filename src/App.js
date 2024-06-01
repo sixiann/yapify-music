@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import ChatsPage from "./pages/ChatsPage";
-import { ReactComponent as Logout } from './assets/logout.svg';
-import Logout2 from './assets/icons8-logout-80.png';
 import Button from "./components/Button";
 
 // import Button from "./components/Button";
@@ -35,7 +33,7 @@ function App() {
         
           <div className="w-full flex">
             <Button 
-              className="ml-auto mt-2 mr-7"
+              className="ml-auto mt-2 mr-7 mb-1"
               onClick={logout}
               text="Logout"/>
           </div>

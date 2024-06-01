@@ -28,7 +28,6 @@ import {
 import { waveform } from "ldrs";
 waveform.register();
 
-
 function ChatsPage({ token }) {
   const [loading, setLoading] = useState(true);
   const [artists, setArtists] = useState([]); //artists in sidebar (<conversationlist>)
@@ -207,121 +206,122 @@ function ChatsPage({ token }) {
         </div>
       ) : (
         <>
-                        
+          <div className="block mt-0 p-0 fixed relative">
+            <MainContainer
+              responsive
+              style={{
+                height: "85vh",
+              }}
+            >
+                <Sidebar position="left" style={sidebarStyle}>
+                  <ConversationHeader>
+                    <ConversationHeader.Content userName="Your current top artists" />
+                  </ConversationHeader>
 
-          <MainContainer
-            responsive
-            style={{
-              height: "85vh",
-            }}
-          >
-            <Sidebar position="left" style={sidebarStyle}>
-              <ConversationHeader>
-                <ConversationHeader.Content userName="Your current top artists" />
-
-              </ConversationHeader>
-              <ConversationList>
-                {Object.keys(artists).map((artist, index) => (
-                  <Conversation
-                    key={index}
-                    onClick={() => handleConversationClick(artist)}
-                    style={{
-                      backgroundColor:
-                        activeArtist === artist ? "#c6e2f9" : "transparent",
-                    }}
-                  >
-                    <Avatar
-                      name={artists[index].artistName}
-                      src={artists[index].artistImage}
-                      status="available"
-                      style={conversationAvatarStyle}
-                    />
-                    <Conversation.Content
-                      name={artists[index].artistName}
-                      lastSenderName={artists[index].artistName}
-                      info={`I'm #${index + 1}!!`}
-                      style={conversationContentStyle}
-                    />
-                  </Conversation>
-                ))}
-              </ConversationList>
-            </Sidebar>
-
-            {activeArtist ? (
-              <ChatContainer style={chatContainerStyle}>
-                <ConversationHeader>
-                  <ConversationHeader.Back onClick={handleBackClick} />
-                  <Avatar
-                    name={artists[activeArtist].artistName}
-                    src={artists[activeArtist].artistImage}
-                  />
-                  <ConversationHeader.Content
-                    info="online now..."
-                    userName={artists[activeArtist].artistName}
-                  />
-                  <ConversationHeader.Actions>
-                    <a
-                      target="_blank"
-                      href={artists[activeArtist].artistLink}
-                      rel="noreferrer"
-                    >
-                      <VoiceCallButton title="Go to Spotify Link" />
-                    </a>
-                  </ConversationHeader.Actions>
-                </ConversationHeader>
-                <MessageList
-                  typingIndicator={
-                    isTyping && activeArtist ? (
-                      <TypingIndicator
-                        content={`${
-                          artists.find(
-                            (a) => a.artistId === artists[activeArtist].artistId
-                          )?.artistName
-                        } is typing`}
-                      />
-                    ) : null
-                  }
-                >
-                  <MessageSeparator content={getCurrentDateTime()} />
-
-                  {activeArtist &&
-                    messages[artists[activeArtist].artistId] &&
-                    messages[artists[activeArtist].artistId].map((msg) => (
-                      <Message
-                        key={msg.id}
-                        model={{
-                          direction: msg.direction || "incoming",
-                          message: msg.message,
-                          position: "single",
+                  <ConversationList>
+                    {Object.keys(artists).map((artist, index) => (
+                      <Conversation
+                        key={index}
+                        onClick={() => handleConversationClick(artist)}
+                        style={{
+                          backgroundColor:
+                            activeArtist === artist ? "#c6e2f9" : "transparent",
                         }}
                       >
                         <Avatar
-                          name={
-                            msg.direction === "outgoing"
-                              ? user.userName
-                              : artists[msg.artist].artistName
-                          }
-                          src={
-                            msg.direction === "outgoing"
-                              ? user.userImage
-                              : artists[msg.artist].artistImage
-                          }
+                          name={artists[index].artistName}
+                          src={artists[index].artistImage}
+                          status="available"
+                          style={conversationAvatarStyle}
                         />
-                      </Message>
+                        <Conversation.Content
+                          name={artists[index].artistName}
+                          lastSenderName={artists[index].artistName}
+                          info={`I'm #${index + 1}!!`}
+                          style={conversationContentStyle}
+                        />
+                      </Conversation>
                     ))}
-                </MessageList>
-                <MessageInput
-                  attachButton={false}
-                  value={inputValue}
-                  onSend={() => handleSend(activeArtist)}
-                  disabled={inputDisabled[activeArtist]}
-                  sendDisabled={sendDisabled[activeArtist]}
-                />
-              </ChatContainer>
-            ) : (
-              !isMobile && <DefaultChatContainer />
-            )}
-          </MainContainer>
+                  </ConversationList>
+                </Sidebar>
+
+              {activeArtist ? (
+                <ChatContainer style={chatContainerStyle}>
+                  <ConversationHeader>
+                    <ConversationHeader.Back onClick={handleBackClick} />
+                    <Avatar
+                      name={artists[activeArtist].artistName}
+                      src={artists[activeArtist].artistImage}
+                    />
+                    <ConversationHeader.Content
+                      info="online now..."
+                      userName={artists[activeArtist].artistName}
+                    />
+                    <ConversationHeader.Actions>
+                      <a
+                        target="_blank"
+                        href={artists[activeArtist].artistLink}
+                        rel="noreferrer"
+                      >
+                        <VoiceCallButton title="Go to Spotify Link" />
+                      </a>
+                    </ConversationHeader.Actions>
+                  </ConversationHeader>
+                  <MessageList
+                    typingIndicator={
+                      isTyping && activeArtist ? (
+                        <TypingIndicator
+                          content={`${
+                            artists.find(
+                              (a) =>
+                                a.artistId === artists[activeArtist].artistId
+                            )?.artistName
+                          } is typing`}
+                        />
+                      ) : null
+                    }
+                  >
+                    <MessageSeparator content={getCurrentDateTime()} />
+
+                    {activeArtist &&
+                      messages[artists[activeArtist].artistId] &&
+                      messages[artists[activeArtist].artistId].map((msg) => (
+                        <Message
+                          key={msg.id}
+                          model={{
+                            direction: msg.direction || "incoming",
+                            message: msg.message,
+                            position: "single",
+                          }}
+                        >
+                          <Avatar
+                            name={
+                              msg.direction === "outgoing"
+                                ? user.userName
+                                : artists[msg.artist].artistName
+                            }
+                            src={
+                              msg.direction === "outgoing"
+                                ? user.userImage
+                                : artists[msg.artist].artistImage
+                            }
+                          />
+                        </Message>
+                      ))}
+                  </MessageList>
+                  <MessageInput
+                    attachButton={false}
+                    value={inputValue}
+                    onSend={() => handleSend(activeArtist)}
+                    disabled={inputDisabled[activeArtist]}
+                    sendDisabled={sendDisabled[activeArtist]}
+                  />
+                </ChatContainer>
+              ) : (
+                !isMobile && <DefaultChatContainer />
+              )}
+            </MainContainer>
+          </div>
         </>
       )}
     </div>
