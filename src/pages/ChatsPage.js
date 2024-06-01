@@ -17,7 +17,13 @@ import {
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
 import DefaultChatContainer from "../components/DefaultChatContainer";
-import { getCurrentArtists, getUserProfile, getThankYouText, getCurrentDateTime } from "../api";
+import {
+  getCurrentArtists,
+  getUserProfile,
+  getThankYouText,
+  getCurrentDateTime,
+  getRecommendationsText,
+} from "../api";
 import { waveform } from "ldrs";
 waveform.register();
 
@@ -29,6 +35,8 @@ function ChatsPage({ token }) {
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [inputDisabled, setInputDisabled] = useState({});
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [sidebarStyle, setSidebarStyle] = useState({});
@@ -38,7 +46,7 @@ function ChatsPage({ token }) {
   const isFirstRender = useRef(true);
 
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
-
+  
   //load sidebar artists
   useEffect(() => {
     const fetchData = async () => {
@@ -122,6 +130,7 @@ function ChatsPage({ token }) {
               },
             ],
           }));
+          setInputValue("What are some other artists I can listen to?");
         } catch (error) {
           console.error("Error getting thank you text:", error);
         } finally {
@@ -137,10 +146,49 @@ function ChatsPage({ token }) {
       artists,
       setIsTyping,
       setMessages,
-      getThankYouText,
     ]
   );
 
+  const handleSend = async (artist) => {
+    setMessages((prevMessages) => ({
+      ...prevMessages,
+      [artists[artist].artistId]: [
+        ...(prevMessages[artists[artist].artistId] || []),
+        {
+          id: (prevMessages[artists[artist].artistId] || []).length,
+          direction: "outgoing",
+          message: inputValue,
+        },
+      ],
+    }));
+    setInputValue("");
+    setInputDisabled((prevInputDisabled) => ({
+      ...prevInputDisabled,
+      [artist]: true,
+    }));
+    setIsTyping(true);
+
+    try {
+      const response = await getRecommendationsText(artists[artist].artistId); // Call the getThankYouText function
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [artists[artist].artistId]: [
+          ...(prevMessages[artists[artist].artistId] || []),
+          {
+            id: (prevMessages[artists[artist].artistId] || []).length,
+            artist,
+            message: response.data,
+          },
+        ],
+      }));
+
+      
+    } catch (error) {
+      console.error("Error getting thank you text:", error);
+    } finally {
+      setIsTyping(false);
+    }
+  };
   return (
     <div className="px-4 pt-2 container mx-auto">
       {loading ? (
@@ -235,19 +283,32 @@ function ChatsPage({ token }) {
                       <Message
                         key={msg.id}
                         model={{
-                          direction: "incoming",
+                          direction: msg.direction || "incoming",
                           message: msg.message,
                           position: "single",
                         }}
                       >
                         <Avatar
-                          name={artists[msg.artist].artistName}
-                          src={artists[msg.artist].artistImage}
+                          name={
+                            msg.direction === "outgoing"
+                              ? user.userName
+                              : artists[msg.artist].artistName
+                          }
+                          src={
+                            msg.direction === "outgoing"
+                              ? user.userImage
+                              : artists[msg.artist].artistImage
+                          }
                         />
                       </Message>
                     ))}
                 </MessageList>
-                <MessageInput />
+                <MessageInput
+                  attachButton={false}
+                  value={inputValue}
+                  onSend={() => handleSend(activeArtist)}
+                  disabled={inputDisabled[activeArtist]}
+                  />
               </ChatContainer>
             ) : (
               !isMobile && <DefaultChatContainer />

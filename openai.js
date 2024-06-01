@@ -32,7 +32,7 @@ const getGPTresponse = async (prompt) => {
   // 2nd message: artist recommendations
   const getRecommendationsText = async (artistName, genres, relatedArtists) => {
     const systemPrompt = `You are ${artistName}. Talk like how ${artistName} talks based on their interviews, tweets etc. You are talking to a fan who loves your music. Your genres are an artist in ${genres}, use a tone similar to ${genres}.`;
-    let prompt = `No need to greet the fan. Write a message recommending similar artists: ${relatedArtists} to the fan.`;
+    let prompt = `IMPORTANT: No need to greet the fan, no need to say hello, hey etc. Write a message recommending similar artists: ${relatedArtists} to the fan.`;
   
     prompt = systemPrompt + prompt;
   
