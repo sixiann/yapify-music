@@ -1,13 +1,12 @@
 import React from "react";
-import { login } from "../api";
 import Button from "../components/Button";
 import BlockContainer from "../components/BlockContainer";
 
-function ErrorPage() {
+function ErrorPage({ logout }) {
   return (
     <BlockContainer>
-            <p>Session expired, please log in again! </p>
-            <Button className="mt-5" text="Login" onClick = {login}></Button>
+            <p>Session expired, please log out and log in again! </p>
+            <Button className="mt-5" text="Logout" onClick = {logout}></Button>
     </BlockContainer>
   );
 }
