@@ -1,7 +1,7 @@
 /* eslint-disable no-lone-blocks */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-
+import ErrorPage from "./ErrorPage";
 import {
   Sidebar,
   ChatContainer,
@@ -40,6 +40,7 @@ function ChatsPage({ token }) {
   const [inputValue, setInputValue] = useState("");
   const [inputDisabled, setInputDisabled] = useState({});
   const [sendDisabled, setSendDisabled] = useState({});
+  const [error, setError] = useState(false);
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [sidebarStyle, setSidebarStyle] = useState({});
@@ -62,6 +63,7 @@ function ChatsPage({ token }) {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching artists:", error);
+        setError(true);
       }
     };
     fetchData();
@@ -140,6 +142,7 @@ function ChatsPage({ token }) {
           }));
         } catch (error) {
           console.error("Error getting thank you text:", error);
+          setError(true);
         } finally {
           setIsTyping(false);
         }
@@ -182,7 +185,8 @@ function ChatsPage({ token }) {
           
           
         } catch (error) {
-          console.error("Error getting thank you text:", error);
+          console.error("Error getting songs personality text:", error);
+          setError(true);
         } finally {
           setIsTyping(false);
         }
@@ -232,11 +236,18 @@ function ChatsPage({ token }) {
         ],
       }));
     } catch (error) {
-      console.error("Error getting thank you text:", error);
+      console.error("Error getting recommendations text:", error);
+      setError(true);
     } finally {
       setIsTyping(false);
     }
   };
+
+
+  if (error) {
+    return <ErrorPage />;  // Render ErrorPage if an error occurred
+  }
+
   return (
     <div className="px-4 pt-2 container mx-auto">
       {loading ? (
