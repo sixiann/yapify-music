@@ -50,6 +50,27 @@ function ChatsPage({ token }) {
   const isFirstRender = useRef(true);
 
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
+  const updateStateVariable = (variable, artist, value) => {
+    variable((prevValue) => ({
+      ...prevValue,
+      [artist]: value,
+    }));
+  };
+
+  const updateMessages = useCallback((artist, message, direction) => {
+    setMessages((prevMessages) => ({
+      ...prevMessages,
+      [artists[artist].artistId]: [
+        ...(prevMessages[artists[artist].artistId] || []),
+        {
+          id: (prevMessages[artists[artist].artistId] || []).length,
+          direction: direction,
+          artist: artist,
+          message: message,
+        },
+      ],
+    }));
+  });
 
   //load sidebar artists
   useEffect(() => {
@@ -123,26 +144,14 @@ function ChatsPage({ token }) {
       if (!messages[artists[artist].artistId]) {
         setIsTyping(true);
         try {
-          const response = await getThankYouText(artists[artist].artistId); // Call the getThankYouText function
-          setMessages((prevMessages) => ({
-            ...prevMessages,
-            [artists[artist].artistId]: [
-              ...(prevMessages[artists[artist].artistId] || []),
-              {
-                id: (prevMessages[artists[artist].artistId] || []).length,
-                artist,
-                message: response.data,
-              },
-            ],
-          }));
-          setInputValues((prevInputValues) => ({
-            ...prevInputValues,
-            [artist]: "What are some other artists I can listen to?",
-          }));
-          setSendDisabled((prevSendDisabled) => ({
-            ...prevSendDisabled,
-            [artist]: false,
-          }));
+          const response = await getThankYouText(artists[artist].artistId);
+          updateMessages(artist, response.data, "incoming");
+          updateStateVariable(
+            setInputValues,
+            artist,
+            "What are some other artists I can listen to?"
+          );
+          updateStateVariable(setSendDisabled, artist, false);
         } catch (error) {
           console.error("Error getting thank you text:", error);
           setError(true);
@@ -151,15 +160,7 @@ function ChatsPage({ token }) {
         }
       }
     },
-    [
-      sidebarVisible,
-      setSidebarVisible,
-      setActiveArtist,
-      messages,
-      artists,
-      setIsTyping,
-      setMessages,
-    ]
+    [sidebarVisible, messages, artists, updateMessages]
   );
 
   const handleFBIClick = useCallback(
@@ -175,17 +176,7 @@ function ChatsPage({ token }) {
           const response = await getSongsPersonalityMessages(
             artists[artist].artistId
           );
-          setMessages((prevMessages) => ({
-            ...prevMessages,
-            [artists[artist].artistId]: [
-              ...(prevMessages[artists[artist].artistId] || []),
-              {
-                id: (prevMessages[artists[artist].artistId] || []).length,
-                artist,
-                message: response.data,
-              },
-            ],
-          }));
+          updateMessages(artist, response.data, "incoming");
         } catch (error) {
           console.error("Error getting songs personality text:", error);
           setError(true);
@@ -194,52 +185,18 @@ function ChatsPage({ token }) {
         }
       }
     },
-    [
-      sidebarVisible,
-      setSidebarVisible,
-      setActiveArtist,
-      messages,
-      artists,
-      setIsTyping,
-      setMessages,
-    ]
+    [sidebarVisible, messages, artists, updateMessages]
   );
 
   const handleSend = async (artist) => {
-    setMessages((prevMessages) => ({
-      ...prevMessages,
-      [artists[artist].artistId]: [
-        ...(prevMessages[artists[artist].artistId] || []),
-        {
-          id: (prevMessages[artists[artist].artistId] || []).length,
-          direction: "outgoing",
-          message: inputValues[artist],
-        },
-      ],
-    }));
-    setInputValues((prevInputValues) => ({
-      ...prevInputValues,
-      [artist]: "",
-    }));
-    setInputDisabled((prevInputDisabled) => ({
-      ...prevInputDisabled,
-      [artist]: true,
-    }));
+    updateMessages(artist, inputValues[artist], "outgoing");
+    updateStateVariable(setInputValues, artist, "");
+    updateStateVariable(setInputDisabled, artist, true);
     setIsTyping(true);
 
     try {
-      const response = await getRecommendationsText(artists[artist].artistId); // Call the getThankYouText function
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [artists[artist].artistId]: [
-          ...(prevMessages[artists[artist].artistId] || []),
-          {
-            id: (prevMessages[artists[artist].artistId] || []).length,
-            artist,
-            message: response.data,
-          },
-        ],
-      }));
+      const response = await getRecommendationsText(artists[artist].artistId);
+      updateMessages(artist, response.data, "incoming");
     } catch (error) {
       console.error("Error getting recommendations text:", error);
       setError(true);
@@ -376,7 +333,7 @@ function ChatsPage({ token }) {
                         <Message
                           key={msg.id}
                           model={{
-                            direction: msg.direction || "incoming",
+                            direction: msg.direction,
                             message: msg.message,
                             position: "single",
                           }}
@@ -400,7 +357,9 @@ function ChatsPage({ token }) {
                     attachButton={false}
                     value={inputValues[activeArtist] || ""}
                     onSend={() => handleSend(activeArtist)}
-                    disabled={activeArtist === "0" ? true : inputDisabled[activeArtist]}
+                    disabled={
+                      activeArtist === "0" ? true : inputDisabled[activeArtist]
+                    }
                     sendDisabled={
                       activeArtist === "0" ? true : sendDisabled[activeArtist]
                     }
