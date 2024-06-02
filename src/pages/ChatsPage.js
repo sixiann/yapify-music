@@ -77,34 +77,44 @@ function ChatsPage({ token, setToken }) {
     }));
   });
 
-  const handleConversationClick = useCallback(
-    async (artist) => {
-      if (sidebarVisible) {
-        setSidebarVisible(false);
-      }
 
-      setActiveArtist(artist);
-      if (!messages[artists[artist].artistId]) {
-        setIsTyping(true);
-        try {
-          const response = await getThankYouText(artists[artist].artistId);
-          updateMessages(artist, response.data, "incoming");
-          updateStateVariable(
-            setInputValues,
-            artist,
-            "What are some other artists I can listen to?"
-          );
-          updateStateVariable(setSendDisabled, artist, false);
-        } catch (error) {
-          console.error("Error getting thank you text:", error);
-          setError(true);
-        } finally {
-          setIsTyping(false);
-        }
+// If a request is made for an artist that is already in the pendingRequests set,
+//  the function ignores the new request, 
+//  preventing multiple concurrent requests for the same artist.
+const pendingRequests = useRef(new Set()); 
+const handleConversationClick = useCallback(
+  async (artist) => {
+    if (sidebarVisible) {
+      setSidebarVisible(false);
+    }
+
+    setActiveArtist(artist);
+
+    if (!messages[artists[artist].artistId] && !pendingRequests.current.has(artist)) {
+      pendingRequests.current.add(artist); 
+      setIsTyping(true);
+
+      try {
+        const response = await getThankYouText(artists[artist].artistId);
+        updateMessages(artist, response.data, "incoming");
+        updateStateVariable(
+          setInputValues,
+          artist,
+          "What are some other artists I can listen to?"
+        );
+        updateStateVariable(setSendDisabled, artist, false);
+      } catch (error) {
+        console.error("Error getting thank you text:", error);
+        setError(true);
+      } finally {
+        pendingRequests.current.delete(artist); // Remove the artist from pending
+        setIsTyping(false);
       }
-    },
-    [sidebarVisible, messages, artists, updateMessages]
-  );
+    }
+  },
+  [sidebarVisible, messages, artists, updateMessages]
+);
+
 
   const handleFBIClick = useCallback(
     async (artist) => {
