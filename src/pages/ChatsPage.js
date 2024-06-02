@@ -37,7 +37,7 @@ function ChatsPage({ token }) {
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValues, setInputValues] = useState({});
   const [inputDisabled, setInputDisabled] = useState({});
   const [sendDisabled, setSendDisabled] = useState({});
   const [error, setError] = useState(false);
@@ -135,7 +135,10 @@ function ChatsPage({ token }) {
               },
             ],
           }));
-          setInputValue("What are some other artists I can listen to?");
+          setInputValues((prevInputValues) => ({
+            ...prevInputValues,
+            [artist]: "What are some other artists I can listen to?",
+          }));
           setSendDisabled((prevSendDisabled) => ({
             ...prevSendDisabled,
             [artist]: false,
@@ -159,7 +162,6 @@ function ChatsPage({ token }) {
     ]
   );
 
-
   const handleFBIClick = useCallback(
     async (artist) => {
       if (sidebarVisible) {
@@ -170,7 +172,9 @@ function ChatsPage({ token }) {
       if (!messages[artists[artist].artistId]) {
         setIsTyping(true);
         try {
-          const response = await getSongsPersonalityMessages(artists[artist].artistId); 
+          const response = await getSongsPersonalityMessages(
+            artists[artist].artistId
+          );
           setMessages((prevMessages) => ({
             ...prevMessages,
             [artists[artist].artistId]: [
@@ -182,8 +186,6 @@ function ChatsPage({ token }) {
               },
             ],
           }));
-          
-          
         } catch (error) {
           console.error("Error getting songs personality text:", error);
           setError(true);
@@ -211,11 +213,14 @@ function ChatsPage({ token }) {
         {
           id: (prevMessages[artists[artist].artistId] || []).length,
           direction: "outgoing",
-          message: inputValue,
+          message: inputValues[artist],
         },
       ],
     }));
-    setInputValue("");
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [artist]: "",
+    }));
     setInputDisabled((prevInputDisabled) => ({
       ...prevInputDisabled,
       [artist]: true,
@@ -243,9 +248,8 @@ function ChatsPage({ token }) {
     }
   };
 
-
   if (error) {
-    return <ErrorPage />;  // Render ErrorPage if an error occurred
+    return <ErrorPage />; // Render ErrorPage if an error occurred
   }
 
   return (
@@ -281,9 +285,7 @@ function ChatsPage({ token }) {
                   }}
                 >
                   <Avatar
-                    src={
-                      artists[0].artistImage
-                    }
+                    src={artists[0].artistImage}
                     status="available"
                     style={conversationAvatarStyle}
                   />
@@ -396,11 +398,13 @@ function ChatsPage({ token }) {
                   </MessageList>
                   <MessageInput
                     attachButton={false}
-                    value={inputValue}
+                    value={inputValues[activeArtist] || ""}
                     onSend={() => handleSend(activeArtist)}
-                    disabled={inputDisabled[activeArtist]}
-                    sendDisabled={activeArtist === "0" ? true : sendDisabled[activeArtist]}
-                    />
+                    disabled={activeArtist === "0" ? true : inputDisabled[activeArtist]}
+                    sendDisabled={
+                      activeArtist === "0" ? true : sendDisabled[activeArtist]
+                    }
+                  />
                 </ChatContainer>
               ) : (
                 !isMobile && <DefaultChatContainer />
