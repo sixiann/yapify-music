@@ -11,6 +11,10 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+app.use("/", (req, res) => {
+  res.send("server is running");
+});
+
 // listening for port 5000
 app.listen(5000, () => console.log(`Server is running on ${port}`));
 
@@ -53,13 +57,13 @@ app.post("/get-current-artists", async (req, res) => {
       artistName: "FBI agent",
       artistId: "123",
       genres: [],
-      artistImage: "https://cdn.icon-icons.com/icons2/3322/PNG/512/sunglasses_with_face_smiling_emo_emoticon_emoji_icon_209630.png",
+      artistImage:
+        "https://cdn.icon-icons.com/icons2/3322/PNG/512/sunglasses_with_face_smiling_emo_emoticon_emoji_icon_209630.png",
       artistLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       index: 0,
-    }
+    };
     userCurrentArtists.push(FBIagent);
-    
-    
+
     const userCurrentArtistsData = await getCurrentArtistsFromSpotify(token);
     userCurrentArtistsData.items.forEach((artist, index) => {
       const artistInfo = {
