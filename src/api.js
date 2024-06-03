@@ -1,5 +1,4 @@
 import axios from "axios";
-
 //login
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const REDIRECT_URI = "https://yapify-tau.vercel.app/";
@@ -10,6 +9,11 @@ const SCOPES = [
   "user-top-read",
   "user-read-recently-played",
 ];
+
+const baseURL = "https://yapify-server.vercel.app";
+const axiosInstance = axios.create({
+  baseURL: baseURL,
+});
 
 //leave this on frontend, i realized u can't hide ur client_id anyway since it's in the url
 const login = () => {
@@ -55,8 +59,8 @@ function getCurrentDateTime() {
 
 const getCurrentArtists = async (token) => {
   try {
-    const response = await axios.post(
-      "http://localhost:5000/get-current-artists",
+    const response = await axiosInstance.post(
+      "/get-current-artists",
       {
         token,
       }
@@ -70,8 +74,8 @@ const getCurrentArtists = async (token) => {
 
 const getUserProfile = async (token) => {
   try {
-    const response = await axios.post(
-      "http://localhost:5000/get-user-profile",
+    const response = await axiosInstance.post(
+      "/get-user-profile",
       {
         token,
       }
@@ -85,8 +89,8 @@ const getUserProfile = async (token) => {
 
 const getThankYouText = async (artistId) => {
   try {
-    const response = await axios.post(
-      "http://localhost:5000/get-thankyou-text",
+    const response = await axiosInstance.post(
+      "/get-thankyou-text",
       {
         artistId,
       }
@@ -100,8 +104,8 @@ const getThankYouText = async (artistId) => {
 
 const getRecommendationsText = async (artistId) => {
   try {
-    const response = await axios.post(
-      "http://localhost:5000/get-recommendations-text",
+    const response = await axiosInstance.post(
+      "/get-recommendations-text",
       {
         artistId,
       }
@@ -115,8 +119,8 @@ const getRecommendationsText = async (artistId) => {
 
 const getSongsPersonalityMessages = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:5000/get-songs-personality-messages"
+    const response = await axiosInstance.get(
+      "/get-songs-personality-messages"
     );
     return response.data;
   } catch (error) {
