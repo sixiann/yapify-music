@@ -31,18 +31,20 @@ import { waveform } from "ldrs";
 waveform.register();
 
 function ChatsPage({ token, setToken }) {
-  const [loading, setLoading] = useState(true);
-  const [artists, setArtists] = useState([]); //artists in sidebar (<conversationlist>)
-  const [activeArtist, setActiveArtist] = useState(null); //artist i'm chatting with
+  const [activeIndex, setactiveIndex] = useState(null); //artist i'm chatting with
   const [user, setUser] = useState({});
+
+  const [artists, setArtists] = useState([]); //artists in sidebar (<conversationlist>)
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [inputValues, setInputValues] = useState({});
   const [inputDisabled, setInputDisabled] = useState({});
   const [sendDisabled, setSendDisabled] = useState({});
-  const [error, setError] = useState(false);
 
+  //for how things look
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [sidebarStyle, setSidebarStyle] = useState({});
   const [chatContainerStyle, setChatContainerStyle] = useState({});
@@ -55,22 +57,22 @@ function ChatsPage({ token, setToken }) {
     window.localStorage.removeItem("token");
   };
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
-  const updateStateVariable = (variable, artist, value) => {
+  const updateStateVariable = (variable, index, value) => {
     variable((prevValue) => ({
       ...prevValue,
-      [artist]: value,
+      [index]: value,
     }));
   };
 
-  const updateMessages = useCallback((artist, message, direction) => {
+  const updateMessages = useCallback((index, message, direction) => {
     setMessages((prevMessages) => ({
       ...prevMessages,
-      [artists[artist].artistId]: [
-        ...(prevMessages[artists[artist].artistId] || []),
+      [artists[index].artistId]: [
+        ...(prevMessages[artists[index].artistId] || []),
         {
-          id: (prevMessages[artists[artist].artistId] || []).length,
+          id: (prevMessages[artists[index].artistId] || []).length,
           direction: direction,
-          artist: artist,
+          index: index,
           message: message,
         },
       ],
@@ -83,31 +85,31 @@ function ChatsPage({ token, setToken }) {
 //  preventing multiple concurrent requests for the same artist.
 const pendingRequests = useRef(new Set()); 
 const handleConversationClick = useCallback(
-  async (artist) => {
+  async (index) => {
     if (sidebarVisible) {
       setSidebarVisible(false);
     }
 
-    setActiveArtist(artist);
+    setactiveIndex(index);
 
-    if (!messages[artists[artist].artistId] && !pendingRequests.current.has(artist)) {
-      pendingRequests.current.add(artist); 
+    if (!messages[artists[index].artistId] && !pendingRequests.current.has(index)) {
+      pendingRequests.current.add(index); 
       setIsTyping(true);
 
       try {
-        const response = await getThankYouText(artists[artist].artistId);
-        updateMessages(artist, response.data, "incoming");
+        const response = await getThankYouText(artists[index].artistId);
+        updateMessages(index, response.data, "incoming");
         updateStateVariable(
           setInputValues,
-          artist,
+          index,
           "What are some other artists I can listen to?"
         );
-        updateStateVariable(setSendDisabled, artist, false);
+        updateStateVariable(setSendDisabled, index, false);
       } catch (error) {
         console.error("Error getting thank you text:", error);
         setError(true);
       } finally {
-        pendingRequests.current.delete(artist); // Remove the artist from pending
+        pendingRequests.current.delete(index); // Remove the index from pending
         setIsTyping(false);
       }
     }
@@ -117,19 +119,19 @@ const handleConversationClick = useCallback(
 
 
   const handleFBIClick = useCallback(
-    async (artist) => {
+    async (index) => {
       if (sidebarVisible) {
         setSidebarVisible(false);
       }
 
-      setActiveArtist(artist);
-      if (!messages[artists[artist].artistId]) {
+      setactiveIndex(index);
+      if (!messages[artists[index].artistId]) {
         setIsTyping(true);
         try {
           const response = await getSongsPersonalityMessages(
-            artists[artist].artistId
+            artists[index].artistId
           );
-          updateMessages(artist, response.data, "incoming");
+          updateMessages(index, response.data, "incoming");
         } catch (error) {
           console.error("Error getting songs personality text:", error);
           setError(true);
@@ -141,15 +143,15 @@ const handleConversationClick = useCallback(
     [sidebarVisible, messages, artists, updateMessages]
   );
 
-  const handleSend = async (artist) => {
-    updateMessages(artist, inputValues[artist], "outgoing");
-    updateStateVariable(setInputValues, artist, "");
-    updateStateVariable(setInputDisabled, artist, true);
+  const handleSend = async (index) => {
+    updateMessages(index, inputValues[index], "outgoing");
+    updateStateVariable(setInputValues, index, "");
+    updateStateVariable(setInputDisabled, index, true);
     setIsTyping(true);
 
     try {
-      const response = await getRecommendationsText(artists[artist].artistId);
-      updateMessages(artist, response.data, "incoming");
+      const response = await getRecommendationsText(artists[index].artistId);
+      updateMessages(index, response.data, "incoming");
     } catch (error) {
       console.error("Error getting recommendations text:", error);
       setError(true);
@@ -257,7 +259,7 @@ const handleConversationClick = useCallback(
                     key={0}
                     onClick={() => handleFBIClick("0")}
                     style={{
-                      backgroundColor: activeArtist === "0" ? "#c6e2f9" : "transparent",
+                      backgroundColor: activeIndex === "0" ? "#c6e2f9" : "transparent",
                     }}
                   >
                     <Avatar
@@ -275,14 +277,14 @@ const handleConversationClick = useCallback(
 
                   <ConversationList>
                     {Object.keys(artists).map(
-                      (artist, index) =>
+                      (_, index) =>
                         // Only render if index > 0
                         index > 0 && (
                           <Conversation
                             key={index}
-                            onClick={() => handleConversationClick(artist)}
+                            onClick={() => handleConversationClick(index)}
                             style={{
-                              backgroundColor: activeArtist === artist
+                              backgroundColor: activeIndex === index
                                 ? "#c6e2f9"
                                 : "transparent",
                             }}
@@ -303,20 +305,20 @@ const handleConversationClick = useCallback(
                   </ConversationList>
                 </Sidebar>
 
-                {activeArtist ? (
+                {activeIndex ? (
                   <ChatContainer style={chatContainerStyle}>
                     <ConversationHeader>
                       <ConversationHeader.Back onClick={handleBackClick} />
                       <Avatar
-                        name={artists[activeArtist].artistName}
-                        src={artists[activeArtist].artistImage} />
+                        name={artists[activeIndex].artistName}
+                        src={artists[activeIndex].artistImage} />
                       <ConversationHeader.Content
                         info="online now..."
-                        userName={artists[activeArtist].artistName} />
+                        userName={artists[activeIndex].artistName} />
                       <ConversationHeader.Actions>
                         <a
                           target="_blank"
-                          href={artists[activeArtist].artistLink}
+                          href={artists[activeIndex].artistLink}
                           rel="noreferrer"
                         >
                           <VoiceCallButton title="Go to Spotify Link" />
@@ -324,18 +326,16 @@ const handleConversationClick = useCallback(
                       </ConversationHeader.Actions>
                     </ConversationHeader>
                     <MessageList
-                      typingIndicator={isTyping && activeArtist ? (
+                      typingIndicator={isTyping && activeIndex ? (
                         <TypingIndicator
-                          content={`${artists.find(
-                            (a) => a.artistId === artists[activeArtist].artistId
-                          )?.artistName} is typing`} />
+                          content={`${artists[activeIndex].artistName} is typing`} />
                       ) : null}
                     >
                       <MessageSeparator content={getCurrentDateTime()} />
 
-                      {activeArtist &&
-                        messages[artists[activeArtist].artistId] &&
-                        messages[artists[activeArtist].artistId].map((msg) => (
+                      {activeIndex &&
+                        messages[artists[activeIndex].artistId] &&
+                        messages[artists[activeIndex].artistId].map((msg) => (
                           <Message
                             key={msg.id}
                             model={{
@@ -347,19 +347,19 @@ const handleConversationClick = useCallback(
                             <Avatar
                               name={msg.direction === "outgoing"
                                 ? user.userName
-                                : artists[msg.artist].artistName}
+                                : artists[msg.index].artistName}
                               src={msg.direction === "outgoing"
                                 ? user.userImage
-                                : artists[msg.artist].artistImage} />
+                                : artists[msg.index].artistImage} />
                           </Message>
                         ))}
                     </MessageList>
                     <MessageInput
                       attachButton={false}
-                      value={inputValues[activeArtist] || ""}
-                      onSend={() => handleSend(activeArtist)}
-                      disabled={activeArtist === "0" ? true : inputDisabled[activeArtist]}
-                      sendDisabled={activeArtist === "0" ? true : sendDisabled[activeArtist]} />
+                      value={inputValues[activeIndex] || ""}
+                      onSend={() => handleSend(activeIndex)}
+                      disabled={activeIndex === "0" ? true : inputDisabled[activeIndex]}
+                      sendDisabled={activeIndex === "0" ? true : sendDisabled[activeIndex]} />
                   </ChatContainer>
                 ) : (
                   !isMobile && <DefaultChatContainer />
