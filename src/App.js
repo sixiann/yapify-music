@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import ChatsPage from "./pages/ChatsPage";
-import Button from "./components/Button";
-import { getTokenFromUrl } from "./api";
-
-// Default values shown
+import { getTokenFromUrl } from "./api.js";
 
 function App() {
   const [token, setToken] = useState("");
@@ -13,7 +10,7 @@ function App() {
   }, []);
 
   return (
-    <div className="">
+    <>
       {!token ? (
         <LoginPage />
       ) : (
@@ -21,7 +18,7 @@ function App() {
           <ChatsPage token={token} setToken={setToken} />
         </>
       )}
-    </div>
+    </>
   );
 }
 

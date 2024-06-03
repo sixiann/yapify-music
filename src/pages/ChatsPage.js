@@ -34,7 +34,7 @@ function ChatsPage({ token, setToken }) {
   const recommendationsQuestion =
     "What are some other artists I can listen to?";
   const [user, setUser] = useState({});
-  const [artists, setArtists] = useState([]); //keeps track of all chat states associated with specific artist + artist information 
+  const [artists, setArtists] = useState([]); //keeps track of all chat states associated with specific artist + artist information
   const [activeIndex, setactiveIndex] = useState(null); //show the artist i'm chatting with in chatcontainer
 
   //more general states for how things look, responsiveness
