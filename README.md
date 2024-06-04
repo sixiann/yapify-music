@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# Yapify 🎵
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Wanna get roasted for your impeccable music taste and yap with your favourite artists? Log in to Spotify and come yap!
 
-## Available Scripts
+See the <a href="https://yapify-music.vercel.app/" target="_blank">live demo</a> here!
 
-In the project directory, you can run:
 
-### `npm start`
+## Overview
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This project provides a fun chat interface where users can log in with their Spotify account to see their current top artists and listening habits in a chat interface. The chat interface uses OpenAI to generate responses, creating a unique and interactive experience. Not a real chat, you can't actually talk to your favourite artists, but you can be delulu and pretend. 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+## Technologies Used
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Frontend:
+  - React ([CRA](https://create-react-app.dev/))
+  - Tailwind CSS
+  - [Blocks.css](https://thesephist.github.io/blocks.css/)
+  - [chat-ui-kit-react](https://github.com/chatscope/chat-ui-kit-react?tab=readme-ov-file)
 
-### `npm run build`
+- Backend:
+  - Express
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Requirements
+- Node.js and npm (Node Package Manager) installed globally on your machine.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Steps
+1. Clone the repository and navigate to directory:
+   ```sh
+   git clone https://github.com/sixiann/yapify-music/
+   cd yapify-music
+2. Install dependencies:
+   ```sh
+   npm install
+3. Set up environment variables:
+- Create a .env file in the root directory
+- Add the following environment variables:
+  ```sh
+  REACT_APP_CLIENT_ID=your_spotify_client_id
+  OPENAI_API_KEY=your_openai_api_key
+4. Start the development server:
+  ```sh
+  npm run start
+  ```
+5. Open the app in your browser:
+   ```sh
+   http://localhost:3000
+   ```
+   You may have to change the REDIRECT_URI in src/api.js to http://localhost:3000 or whichever port it runs on.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+  
+   
