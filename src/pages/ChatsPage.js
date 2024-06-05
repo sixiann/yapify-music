@@ -182,6 +182,13 @@ function ChatsPage({ token, setToken }) {
         const artistsData = await getCurrentArtists(token);
         setArtists(artistsData.data);
 
+        //if artists is empty, render error page
+        if (Object.keys(artistsData).length === 0) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+
         setArtists((prevArtists) => {
           const updatedArtists = { ...prevArtists };
           Object.keys(updatedArtists).forEach((index) => {
