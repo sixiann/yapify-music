@@ -2,6 +2,7 @@
 
 Wanna get roasted for your impeccable music taste and yap with your favourite artists? Log in to Spotify and come yap!
 
+** currently in dev mode, demo only works for registered users **
 See the <a href="https://yapify-music.vercel.app/" target="_blank">live demo</a> here!
 
 
